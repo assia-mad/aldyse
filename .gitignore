@@ -1,0 +1,6 @@
+media
+db.sqlite3
+__pycache__/
+_migrations/*
+0*.py
+views.cpython-310.pyc
