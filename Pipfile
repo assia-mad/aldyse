@@ -11,6 +11,7 @@ psycopg2 = "*"
 dj-rest-auth = "*"
 django-filter = "*"
 django-cors-headers = "*"
+django-allauth = "*"
 
 [dev-packages]
 

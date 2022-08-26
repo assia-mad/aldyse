@@ -33,6 +33,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 
 INSTALLED_APPS = [
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +48,48 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'aldyseApp',
+]
+SITE_ID = 1
+AUTH_USER_MODEL = 'aldyseApp.User'
+ACCOUNT_ADAPTER = 'aldyseApp.adapter.CustomAccountAdapter'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGOUT_REDIRECT_URL = '/dj-rest-auth/login/'
+LOGIN_URL = 'http://localhost:8000/nera/login'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+REST_AUTH_PW_RESET_USE_SITES_DOMAIN = True
+OLD_PASSWORD_FIELD_ENABLED = True,
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'neradzshop@gmail.com'
+EMAIL_HOST_PASSWORD = 'nzxhzgwtarcetmkh'
+EMAIL_PORT = 587
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+        'REGISTER_SERIALIZER': 'aldyseApp.serializers.CustomRegisterSerializer',
+}
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER':'aldyseApp.serializers.CustomLoginSerializer',
+    'USER_DETAILS_SERIALIZER':'aldyseApp.serializers.CustomUserDetailSerializer',
+}
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [ 'django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.PageNumberPagination'),
+    'PAGE_SIZE': 5
+}
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -84,8 +129,12 @@ WSGI_APPLICATION = 'aldyse.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'aldysedb',
+        'USER': 'postgres',
+        'PASSWORD': 'assiamdn2001',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
