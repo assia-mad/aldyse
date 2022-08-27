@@ -103,3 +103,18 @@ class UpdateUsersByAdminSerializer(serializers.Serializer):
             pass    
         instance.save()
         return instance 
+
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Type
+        fields = ['id','name','image']
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Category
+        fields = ['id','name','image']
+
+class SubcategorySerializer(serializers.ModelSerializer):
+    class Meta :
+        model = SubCategory
+        fields = ['id','name','category','image']

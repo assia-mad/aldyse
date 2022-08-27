@@ -10,6 +10,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 class BoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
     serializer_class = BoutiqueSerializer
+    # permission_classes = 
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['owner','name','gps_address','is_free','is_certified']
+    filterset_fields = ['owner','name','gps_address','is_free','is_certified']
+    search_fields = ['owner__id','name','gps_address','is_free','is_certified']
+    ordering_fields = ['owner','name','gps_address','is_free','is_certified']
 
 # manage users by Admin
 class ManageUsersView(viewsets.ModelViewSet):
@@ -28,3 +34,33 @@ class ManageUsersView(viewsets.ModelViewSet):
         if self.request.method == 'PUT':
             serializer_class = UpdateUsersByAdminSerializer
         return serializer_class
+
+class TypeView(viewsets.ModelViewSet):
+    queryset = Type.objects.all()
+    serializer_class = TypeSerializer
+    # permission_classes = 
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['name']
+    filterset_fields = ['name']
+    search_fields = ['name']
+    ordering_fields = ['name']
+
+class CategoryView(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    # permission_classes = 
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['name']
+    filterset_fields = ['name']
+    search_fields = ['name']
+    ordering_fields = ['name']
+
+class SubCategoryView(viewsets.ModelViewSet):
+    queryset = SubCategory.objects.all()
+    serializer_class = SubcategorySerializer
+    # permission_classes = 
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['name','category']
+    filterset_fields = ['name','category']
+    search_fields = ['name','category__id']
+    ordering_fields = ['name','category']

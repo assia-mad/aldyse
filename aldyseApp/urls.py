@@ -24,6 +24,10 @@ schema_view = get_schema_view(
 
 router = routers.DefaultRouter()
 router.register('boutiques', BoutiqueView , basename='boutiques')
+router.register('types', TypeView , basename='types')
+router.register('categories', CategoryView , basename='categories')
+router.register('sub_categories', SubCategoryView, basename='sub_categories')
+
 
 
 urlpatterns = [
