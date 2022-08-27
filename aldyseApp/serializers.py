@@ -1,3 +1,6 @@
+from turtle import update
+from urllib import response
+from xmlrpc.client import ResponseError
 from dj_rest_auth.registration.serializers import RegisterSerializer 
 from dj_rest_auth.serializers import LoginSerializer , UserDetailsSerializer
 from rest_framework import serializers
@@ -119,3 +122,15 @@ class SubcategorySerializer(serializers.ModelSerializer):
     class Meta :
         model = SubCategory
         fields = ['id','name','category','image']
+
+class CertificateDemandSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = CertificateDemand
+        fields = ['id','boutique','demand','is_accepted']
+    
+    def update(self, instance, validated_data):
+        if validated_data.get('is_accepted') == True:
+            boutique = instance.boutique
+            boutique.is_certified = True
+            boutique.save()
+        return super().update(instance, validated_data)

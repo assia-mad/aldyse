@@ -27,6 +27,8 @@ class Boutique(models.Model):
     is_free = models.BooleanField(default=False)
     is_certified = models.BooleanField(default=False)
     commercial_register = models.ImageField(upload_to='register_images/', blank = True , null = True , verbose_name='register_img')
+    def __str__(self):
+        return self.name
 
 class Type(models.Model):
     name = models.CharField(max_length=100)
@@ -47,6 +49,10 @@ class SubCategory(models.Model):
     def __str__(self):
         return self.name
 
-
+class CertificateDemand(models.Model):
+    boutique = models.OneToOneField(Boutique , related_name='certificate_demand', on_delete=models.CASCADE)
+    demand = models.TextField()
+    image = models.ImageField(upload_to ='certificate_demandes_images/',blank=True , null=True , verbose_name='certificate_demandes_images')
+    is_accepted = models.BooleanField(default=False)
 
 

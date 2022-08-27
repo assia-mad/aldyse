@@ -64,3 +64,14 @@ class SubCategoryView(viewsets.ModelViewSet):
     filterset_fields = ['name','category']
     search_fields = ['name','category__id']
     ordering_fields = ['name','category']
+
+class CertificateDemandView(viewsets.ModelViewSet):
+    queryset = CertificateDemand.objects.all()
+    serializer_class = CertificateDemandSerializer
+    # permission_classes = 
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['boutique','demand','is_accepted']
+    filterset_fields = ['boutique','demand','is_accepted']
+    search_fields = ['boutique__id','demand','is_accepted']
+    ordering_fields = ['boutique','demand','is_accepted']
+
