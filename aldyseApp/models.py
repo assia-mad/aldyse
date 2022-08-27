@@ -17,7 +17,7 @@ class User(AbstractUser):
     commune = models.CharField(max_length=100 , blank=True , null= True)
     tel = models.CharField(max_length=10 , validators=[num_only],blank=True)
     image = models.ImageField(upload_to='profile_images/', blank = True , null = True , verbose_name='user_img')
-    role =  models.CharField(max_length=30 , choices=role_choices , default=role_choices[1])
+    role =  models.CharField(max_length=30 , choices=role_choices)
     age = models.PositiveIntegerField(blank=True , null= True)
 
 class Boutique(models.Model):

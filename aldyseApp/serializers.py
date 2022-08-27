@@ -21,6 +21,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     commune = serializers.CharField(max_length=100 ,required = True)
     tel = serializers.CharField(max_length=10 , validators=[num_only], required = True)
     age = serializers.IntegerField(min_value = 10)
+    role = serializers.ChoiceField(choices=role_choices)
     password1 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
     password2 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
     boutique = BoutiqueSerializer(required = False , allow_null = True )
@@ -32,13 +33,13 @@ class CustomRegisterSerializer(RegisterSerializer):
         data_dict['commune'] = self.validated_data.get('commune', '')
         data_dict['tel'] = self.validated_data.get('tel', '')
         data_dict['age'] = self.validated_data.get('age', '')
+        data_dict['role'] = self.validated_data.get('role', '')
         return data_dict
     def save(self, request):
         user = super().save(request)
         try:
             boutique = self._validated_data['boutique'] or None
             name = boutique.get('name')
-            owner = boutique.get('owner')
             gps_address = boutique.get('gps_address')
             commercial_register = boutique.get('commercial_register')
             is_free = boutique.get('is_free')
@@ -75,8 +76,8 @@ class UpdateUsersByAdminSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         new_role = validated_data.get('role') 
         if instance.role != new_role:
-            subject = 'Role changed'
-            message = f'Salut {instance.first_name} {instance.last_name} your role has been changed to {new_role} please logout then login again to get your suitable interface'
+            subject = 'Role changer'
+            message = f'Salut {instance.first_name} {instance.last_name} votre role a été changer à {new_role}. svp déconnectez vous et connectez encore pour pouvoir accédez a vos nouvelles fonctionnalités'
             from_email = settings.EMAIL_HOST_USER 
             recipient_list = [instance.email]
             send_mail(subject, message,from_email,recipient_list , fail_silently=False)
@@ -88,11 +89,11 @@ class UpdateUsersByAdminSerializer(serializers.Serializer):
             
         if instance.is_active != validated_data.get('is_active'):
             if validated_data.get('is_active') == True:
-                account = 'has been activated'
+                account = 'est activé'
             else :
-                account = 'has been desactivated'
-            subject = 'Aldyse account'
-            message = f'Hi {instance.first_name} {instance.last_name} your account {account}'
+                account = 'est désactivé'
+            subject = 'Compte Aldyse'
+            message = f'Salut {instance.first_name} {instance.last_name} votre compte {account}'
             from_email = settings.EMAIL_HOST_USER 
             recipient_list = [instance.email]
             send_mail(subject, message,from_email,recipient_list , fail_silently=False)      
