@@ -74,10 +74,6 @@ class CertificateDemandView(viewsets.ModelViewSet):
     filterset_fields = ['boutique','demand','is_accepted']
     search_fields = ['boutique__id','demand','is_accepted']
     ordering_fields = ['boutique','demand','is_accepted']
-
-class CertificateDemandView(viewsets.ModelViewSet):
-    serializer_class = CertificateDemandSerializer
-    # permission_classes = 
  
 class ListDetailView(viewsets.ReadOnlyModelViewSet):#return list of emails and ids of users
     serializer_class = ListDetailserializer
