@@ -21,7 +21,7 @@ class BoutiqueView(viewsets.ModelViewSet):
 class ManageUsersView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = ManageusersSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     parser_classes = [FormParser, JSONParser, MultiPartParser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['first_name','last_name','email','wilaya','commune','tel','role','is_superuser', 'is_active']
@@ -74,4 +74,13 @@ class CertificateDemandView(viewsets.ModelViewSet):
     filterset_fields = ['boutique','demand','is_accepted']
     search_fields = ['boutique__id','demand','is_accepted']
     ordering_fields = ['boutique','demand','is_accepted']
+
+class CertificateDemandView(viewsets.ModelViewSet):
+    serializer_class = CertificateDemandSerializer
+    # permission_classes = 
+ 
+class ListDetailView(viewsets.ReadOnlyModelViewSet):#return list of emails and ids of users
+    serializer_class = ListDetailserializer
+    pagination_class = None
+    queryset = User.objects.all()
 

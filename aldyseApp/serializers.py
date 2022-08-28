@@ -134,3 +134,8 @@ class CertificateDemandSerializer(serializers.ModelSerializer):
             boutique.is_certified = True
             boutique.save()
         return super().update(instance, validated_data)
+
+class ListDetailserializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','email']
