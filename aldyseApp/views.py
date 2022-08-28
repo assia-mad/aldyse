@@ -83,4 +83,9 @@ class ListDetailView(viewsets.ReadOnlyModelViewSet):#return list of emails and i
     serializer_class = ListDetailserializer
     pagination_class = None
     queryset = User.objects.all()
+    filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
+    filter_fields = ['email']
+    filterset_fields = ['email']
+    search_fields = ['email']
+    ordering_fields = ['email']
 
