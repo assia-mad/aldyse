@@ -126,7 +126,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
 class CertificateDemandSerializer(serializers.ModelSerializer):
     class Meta :
         model = CertificateDemand
-        fields = ['id','boutique','demand','is_accepted']
+        fields = ['id','boutique','demand','image','is_accepted','created_at']
     
     def update(self, instance, validated_data):
         if validated_data.get('is_accepted') == True:
@@ -139,3 +139,55 @@ class ListDetailserializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','email']
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Color
+        fields = ['id','code']
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Size
+        fields = ['id','code']
+
+class SizeRangeSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = SizeRange
+        fields = ['id','min','max']
+
+class SizeTypeSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = SizeRange
+        fields = ['id','name']
+
+class ProductSerializer(serializers.ModelSerializer):
+    available_colors = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
+    update_available_colors= serializers.ListField(
+        child=serializers.CharField(max_length=50), write_only=True , required = False)
+    available_sizes = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
+    update_available_sizes = serializers.ListField(
+        child=serializers.CharField(max_length=50), write_only=True , required = False)
+    size_range = SizeRangeSerializer(required = False , allow_null = True)
+    class Meta :
+        model = Product
+        fields = ['id','boutique','name','description','price','discount_percentage','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','update_available_sizes','size_range']
+    def create(self, validated_data):
+        sizes_codes = validated_data.pop('update_available_sizes')
+        sizes = []
+        colors_codes = validated_data.pop('update_available_colors')
+        colors = []
+        new_product = super().create(validated_data)
+        for code in sizes_codes:
+            size, created = Size.objects.get_or_create(code = code)
+            sizes.append(size)
+        for code in colors_codes:
+            color, created = Color.objects.get_or_create(code = code)
+            colors.append(color)
+        new_product.available_sizes.set(sizes)
+        new_product.available_colors.set(colors)
+        print(new_product.name)
+        new_product.save()
+        return new_product
+    
+
+    

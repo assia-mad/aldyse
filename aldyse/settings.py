@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_filters',
     'dj_rest_auth',
+    'rest_auth',
     'drf_yasg',
     'rest_framework',
     'rest_framework_swagger',

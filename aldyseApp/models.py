@@ -54,5 +54,42 @@ class CertificateDemand(models.Model):
     demand = models.TextField()
     image = models.ImageField(upload_to ='certificate_demandes_images/',blank=True , null=True , verbose_name='certificate_demandes_images')
     is_accepted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True , null=True)
+
+class Color(models.Model):
+    code = models.CharField(max_length= 7 ,unique=True, blank= False , null = False)
+    def __str__(self):
+        return self.code
+
+class Size(models.Model):
+    code = models.CharField(max_length=50 , unique=True)
+    def __str__(self):
+        return self.code
+
+class SizeRange(models.Model):
+    min = models.CharField(max_length=50)
+    max = models.CharField(max_length=50)
+
+class SizeType(models.Model):
+    name = models.CharField(max_length=70)
+    def __str__(self):
+        return self.name
+
+class Product(models.Model):
+    boutique = models.ForeignKey(Boutique , related_name='product', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100 , blank= False, null= False)
+    description = models.TextField(blank=True , null = True)
+    price = models.DecimalField(decimal_places =2,max_digits =10 )
+    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 3,  default= 0.00)
+    product_type = models.ForeignKey(Type , related_name='product', on_delete=models.CASCADE)
+    size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after
+    sub_category = models.ForeignKey(SubCategory , related_name='product', on_delete=models.CASCADE)
+    available_colors = models.ManyToManyField(Color , related_name='product_colours')
+    available_sizes = models.ManyToManyField(Size , related_name='product_sizes')
+    size_range = models.ForeignKey(SizeRange , related_name='product',on_delete=models.CASCADE,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
+
 
 

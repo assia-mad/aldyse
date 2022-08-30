@@ -16,6 +16,7 @@ pip = "*"
 install = "*"
 django-rest-swagger = "*"
 drf-yasg = "*"
+django-rest-auth = "*"
 
 [dev-packages]
 

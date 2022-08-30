@@ -30,7 +30,10 @@ router.register('categories', CategoryView , basename='categories')
 router.register('sub_categories', SubCategoryView, basename='sub_categories')
 router.register('certificate_demands',CertificateDemandView , basename='certificate_demands')
 router.register('users_details',ListDetailView , basename='users_details')
-
+router.register('colors', ColorView , basename='product_colors')
+router.register('sizes', SizeView, basename='product_sizes')
+router.register('size_types', SizeTypeView, basename='size_types')
+router.register('products', ProductView , basename='products')
 
 
 urlpatterns = [

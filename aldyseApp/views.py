@@ -85,3 +85,32 @@ class ListDetailView(viewsets.ReadOnlyModelViewSet):#return list of emails and i
     search_fields = ['email']
     ordering_fields = ['email']
 
+class ColorView(viewsets.ModelViewSet):
+    queryset = Color.objects.all()
+    serializer_class = ColorSerializer
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['code']
+    ordering_fields = ['code']
+
+class SizeView(viewsets.ModelViewSet):
+    queryset = Size.objects.all()
+    serializer_class =SizeSerializer
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['code']
+    ordering_fields = ['code']
+
+class SizeTypeView(viewsets.ModelViewSet):
+    queryset = Size.objects.all()
+    serializer_class =SizeSerializer
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['name']
+    ordering_fields = ['name']
+
+class ProductView(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class =ProductSerializer
+    
+
