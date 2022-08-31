@@ -10,5 +10,6 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         user.tel= data.get('tel')
         user.age = data.get('age')
         user.role = data.get('role')
+        user.gender = data.get('gender')
         user.save()
         return user

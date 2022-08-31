@@ -24,10 +24,10 @@ class ManageUsersView(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     parser_classes = [FormParser, JSONParser, MultiPartParser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['first_name','last_name','email','wilaya','commune','tel','role','is_superuser', 'is_active']
-    filterset_fields = ['first_name','last_name','email','wilaya','commune','tel','role','is_superuser', 'is_active']
-    search_fields = ['first_name','last_name','email','wilaya','commune','tel','role','is_superuser', 'is_active']
-    ordering_fields = ['first_name','last_name','email','wilaya','commune','tel','role','is_superuser', 'is_active']
+    filter_fields = ['first_name','last_name','email','wilaya','commune','tel','role','gender','is_superuser', 'is_active']
+    filterset_fields = ['first_name','last_name','email','wilaya','commune','tel','role','gender','is_superuser', 'is_active']
+    search_fields = ['first_name','last_name','email','wilaya','commune','tel','role','gender','is_superuser', 'is_active']
+    ordering_fields = ['first_name','last_name','email','wilaya','commune','tel','role','gender','is_superuser', 'is_active']
 
     def get_serializer_class(self):
         serializer_class = self.serializer_class

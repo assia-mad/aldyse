@@ -11,6 +11,10 @@ role_choices = [
     ('Visiteur','Visiteur'),
     ('Vendeur','Vendeur'),
 ]
+gender_choices = [
+    ('féminin','féminin'),
+    ('masculin','masculin'),
+]
 
 class User(AbstractUser):
     wilaya = models.CharField(max_length=100 , blank=True , null= True)
@@ -19,6 +23,7 @@ class User(AbstractUser):
     image = models.ImageField(upload_to='profile_images/', blank = True , null = True , verbose_name='user_img')
     role =  models.CharField(max_length=30 , choices=role_choices)
     age = models.PositiveIntegerField(blank=True , null= True)
+    gender =  models.CharField(max_length=30 , choices=gender_choices,null = True)
 
 class Boutique(models.Model):
     owner = models.OneToOneField(User , related_name='boutique', on_delete= models.CASCADE , null= True)

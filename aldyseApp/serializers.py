@@ -25,6 +25,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     tel = serializers.CharField(max_length=10 , validators=[num_only], required = True)
     age = serializers.IntegerField(min_value = 10)
     role = serializers.ChoiceField(choices=role_choices)
+    gender = serializers.ChoiceField(choices= gender_choices)
     password1 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
     password2 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
     boutique = BoutiqueSerializer(required = False , allow_null = True )
@@ -37,6 +38,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         data_dict['tel'] = self.validated_data.get('tel', '')
         data_dict['age'] = self.validated_data.get('age', '')
         data_dict['role'] = self.validated_data.get('role', '')
+        data_dict['gender'] = self.validated_data.get('gender', '')
         return data_dict
     def save(self, request):
         user = super().save(request)
@@ -63,9 +65,11 @@ class CustomUserDetailSerializer(UserDetailsSerializer):
     image = serializers.ImageField(allow_null=True)
     role = serializers.ChoiceField(choices= role_choices)
     age = serializers.IntegerField(min_value = 10)
+    gender = serializers.ChoiceField(choices= gender_choices)
+    
     class Meta : 
         model = User
-        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','is_staff', 'is_active']
+        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active']
 
 class ManageusersSerializer(serializers.ModelSerializer):
     class Meta :
