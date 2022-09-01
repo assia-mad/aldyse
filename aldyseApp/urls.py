@@ -33,6 +33,7 @@ router.register('users_details',ListDetailView , basename='users_details')
 router.register('colors', ColorView , basename='product_colors')
 router.register('sizes', SizeView, basename='product_sizes')
 router.register('size_types', SizeTypeView, basename='size_types')
+router.register('sizes_range', SizeRangeView, basename='sizes_range')
 router.register('products', ProductView , basename='products')
 
 

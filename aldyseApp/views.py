@@ -90,6 +90,7 @@ class ColorView(viewsets.ModelViewSet):
     serializer_class = ColorSerializer
     pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['code']
     search_fields = ['code']
     ordering_fields = ['code']
 
@@ -98,6 +99,7 @@ class SizeView(viewsets.ModelViewSet):
     serializer_class =SizeSerializer
     pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['code']
     search_fields = ['code']
     ordering_fields = ['code']
 
@@ -106,11 +108,26 @@ class SizeTypeView(viewsets.ModelViewSet):
     serializer_class =SizeSerializer
     pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['name']
     search_fields = ['name']
     ordering_fields = ['name']
+
+class SizeRangeView(viewsets.ModelViewSet):
+    queryset = SizeRange.objects.all()
+    serializer_class =SizeRangeSerializer
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['min','max']
+    search_fields = ['min','max']
+    ordering_fields = ['min','max']
+
 
 class ProductView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class =ProductSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['boutique','name','price','discount_percentage','product_type','sub_category','available_colors','size_type','available_sizes','size_range','published_by']
+    search_fields = ['boutique__id','name','price','discount_percentage','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','size_range__id','published_by']
+    ordering_fields = ['boutique','name','price','discount_percentage','product_type','sub_category','available_colors','size_type','available_sizes','size_range','published_by']
     
 

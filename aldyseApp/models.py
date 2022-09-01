@@ -15,6 +15,11 @@ gender_choices = [
     ('féminin','féminin'),
     ('masculin','masculin'),
 ]
+product_origins_choices = [
+    ('BoutiqueAvecRC','BoutiqueAvecRC'),
+    ('BoutiqueSansRC','BoutiqueSansRC'),
+    ('Aldyse','Aldyse'),
+]
 
 class User(AbstractUser):
     wilaya = models.CharField(max_length=100 , blank=True , null= True)
@@ -92,6 +97,7 @@ class Product(models.Model):
     available_colors = models.ManyToManyField(Color , related_name='product_colours')
     available_sizes = models.ManyToManyField(Size , related_name='product_sizes')
     size_range = models.ForeignKey(SizeRange , related_name='product',on_delete=models.CASCADE,null=True)
+    published_by = models.CharField(max_length=50,choices=product_origins_choices, default ='Aldyse')
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
