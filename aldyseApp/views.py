@@ -73,7 +73,7 @@ class SubCategoryView(viewsets.ModelViewSet):
 class CertificateDemandView(viewsets.ModelViewSet):
     queryset = CertificateDemand.objects.all()
     serializer_class = CertificateDemandSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['boutique','demand','is_accepted']
@@ -110,8 +110,8 @@ class SizeView(viewsets.ModelViewSet):
     ordering_fields = ['code']
 
 class SizeTypeView(viewsets.ModelViewSet):
-    queryset = Size.objects.all()
-    serializer_class =SizeSerializer
+    queryset = SizeType.objects.all()
+    serializer_class =SizeTypeSerializer
     pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['name']

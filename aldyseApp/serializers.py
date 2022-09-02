@@ -163,7 +163,7 @@ class SizeRangeSerializer(serializers.ModelSerializer):
 
 class SizeTypeSerializer(serializers.ModelSerializer):
     class Meta :
-        model = SizeRange
+        model = SizeType
         fields = ['id','name']
 
 class ProductSerializer(serializers.ModelSerializer):
