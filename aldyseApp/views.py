@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly , IsAuthenticat
 from rest_framework.filters import SearchFilter , OrderingFilter
 from rest_framework.parsers import JSONParser , FormParser , MultiPartParser
 from django_filters.rest_framework import DjangoFilterBackend
+from .pagination import *
 
 class BoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
@@ -21,6 +22,7 @@ class BoutiqueView(viewsets.ModelViewSet):
 class ManageUsersView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = ManageusersSerializer
+    pagination_class = CustomPagination
     # permission_classes = [IsAuthenticated]
     parser_classes = [FormParser, JSONParser, MultiPartParser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -38,6 +40,7 @@ class ManageUsersView(viewsets.ModelViewSet):
 class TypeView(viewsets.ModelViewSet):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
+    pagination_class = None
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['name']
@@ -48,6 +51,7 @@ class TypeView(viewsets.ModelViewSet):
 class CategoryView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = None
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['name']
@@ -58,6 +62,7 @@ class CategoryView(viewsets.ModelViewSet):
 class SubCategoryView(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubcategorySerializer
+    pagination_class = None
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['name','category']
@@ -68,6 +73,7 @@ class SubCategoryView(viewsets.ModelViewSet):
 class CertificateDemandView(viewsets.ModelViewSet):
     queryset = CertificateDemand.objects.all()
     serializer_class = CertificateDemandSerializer
+    pagination_class = CustomPagination
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['boutique','demand','is_accepted']
@@ -125,6 +131,7 @@ class SizeRangeView(viewsets.ModelViewSet):
 class ProductView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class =ProductSerializer
+    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['boutique','name','price','discount_percentage','product_type','sub_category','available_colors','size_type','available_sizes','size_range','published_by']
     search_fields = ['boutique__id','name','price','discount_percentage','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','size_range__id','published_by']

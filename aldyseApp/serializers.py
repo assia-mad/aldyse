@@ -28,6 +28,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     gender = serializers.ChoiceField(choices= gender_choices)
     password1 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
     password2 = serializers.CharField( write_only=True, required=True, style={'input_type': 'password', })
+    is_active = serializers.BooleanField(default=True)
     boutique = BoutiqueSerializer(required = False , allow_null = True )
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
@@ -39,6 +40,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         data_dict['age'] = self.validated_data.get('age', '')
         data_dict['role'] = self.validated_data.get('role', '')
         data_dict['gender'] = self.validated_data.get('gender', '')
+        data_dict['is_active'] = self.validated_data.get('is_active', '')
         return data_dict
     def save(self, request):
         user = super().save(request)
