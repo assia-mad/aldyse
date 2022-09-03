@@ -20,6 +20,12 @@ product_origins_choices = [
     ('BoutiqueSansRC','BoutiqueSansRC'),
     ('Aldyse','Aldyse'),
 ]
+product_gender_choices = [
+    ('homme','homme'),
+    ('femme','femme'),
+    ('enfant','enfant'),
+    ('mixte','mixte'),
+]
 
 class User(AbstractUser):
     wilaya = models.CharField(max_length=100 , blank=True , null= True)
@@ -76,10 +82,6 @@ class Size(models.Model):
     def __str__(self):
         return self.code
 
-class SizeRange(models.Model):
-    min = models.CharField(max_length=50)
-    max = models.CharField(max_length=50)
-
 class SizeType(models.Model):
     name = models.CharField(max_length=70)
     def __str__(self):
@@ -92,11 +94,12 @@ class Product(models.Model):
     price = models.DecimalField(decimal_places =2,max_digits =10 )
     discount_percentage = models.DecimalField(decimal_places =2,max_digits = 3,  default= 0.00)
     product_type = models.ForeignKey(Type , related_name='product', on_delete=models.CASCADE)
-    size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after
+    size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after  french italien
     sub_category = models.ForeignKey(SubCategory , related_name='product', on_delete=models.CASCADE)
     available_colors = models.ManyToManyField(Color , related_name='product_colours')
+    has_size_range = models.BooleanField(default=False)
     available_sizes = models.ManyToManyField(Size , related_name='product_sizes')
-    size_range = models.ForeignKey(SizeRange , related_name='product',on_delete=models.CASCADE,null=True)
+    gender = models.CharField(max_length=50,choices=product_gender_choices,default='mixte')
     published_by = models.CharField(max_length=50,choices=product_origins_choices, default ='Aldyse')
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):

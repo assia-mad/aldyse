@@ -156,11 +156,6 @@ class SizeSerializer(serializers.ModelSerializer):
         model = Size
         fields = ['id','code']
 
-class SizeRangeSerializer(serializers.ModelSerializer):
-    class Meta :
-        model = SizeRange
-        fields = ['id','min','max']
-
 class SizeTypeSerializer(serializers.ModelSerializer):
     class Meta :
         model = SizeType
@@ -173,20 +168,15 @@ class ProductSerializer(serializers.ModelSerializer):
     available_sizes = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
     update_available_sizes = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True , required = False)
-    size_range = SizeRangeSerializer(required = False , allow_null = True)
     class Meta :
         model = Product
-        fields = ['id','boutique','name','description','price','discount_percentage','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','update_available_sizes','size_range','published_by','created_at']
+        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','created_at']
     def create(self, validated_data):
-        size_range = validated_data.pop('size_range')
-        print(size_range)
-        newrange , created = SizeRange.objects.get_or_create(**size_range)
         sizes_codes = validated_data.pop('update_available_sizes')
         sizes = []
         colors_codes = validated_data.pop('update_available_colors')
         colors = []
         new_product = super().create(validated_data)
-        new_product.size_range = newrange
         for code in sizes_codes:
             size, created = Size.objects.get_or_create(code = code)
             sizes.append(size)
@@ -197,11 +187,6 @@ class ProductSerializer(serializers.ModelSerializer):
         new_product.available_colors.set(colors)
         new_product.save()
         return new_product
-    
-    def update(self, instance, validated_data):
-        size_range = validated_data.get('size_range')
-        SizeRange.objects.update(**size_range)
-        return super().update(instance, validated_data)
     
 
     
