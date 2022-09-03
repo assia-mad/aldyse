@@ -9,4 +9,18 @@ admin.site.register(Category)
 admin.site.register(SubCategory)
 admin.site.register(Color)
 admin.site.register(Size)
-admin.site.register(Product)
+admin.site.register(SizeType)
+
+class ProductImageAdmin(admin.StackedInline):
+    model = ProductImage
+ 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [ProductImageAdmin ]
+ 
+    class Meta:
+       model = Product
+ 
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    pass

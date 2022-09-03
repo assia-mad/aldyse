@@ -161,6 +161,11 @@ class SizeTypeSerializer(serializers.ModelSerializer):
         model = SizeType
         fields = ['id','name']
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = ProductImage
+        fields = ['image','product']
+
 class ProductSerializer(serializers.ModelSerializer):
     available_colors = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
     update_available_colors= serializers.ListField(
@@ -168,14 +173,17 @@ class ProductSerializer(serializers.ModelSerializer):
     available_sizes = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
     update_available_sizes = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True , required = False)
+    images= ImageSerializer(many=True, read_only = True,required = False)
+    uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
     class Meta :
         model = Product
-        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','created_at']
+        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','images','uploaded_images','created_at']
     def create(self, validated_data):
         sizes_codes = validated_data.pop('update_available_sizes')
         sizes = []
         colors_codes = validated_data.pop('update_available_colors')
         colors = []
+        uploaded_data = validated_data.pop('uploaded_images')
         new_product = super().create(validated_data)
         for code in sizes_codes:
             size, created = Size.objects.get_or_create(code = code)
@@ -183,10 +191,31 @@ class ProductSerializer(serializers.ModelSerializer):
         for code in colors_codes:
             color, created = Color.objects.get_or_create(code = code)
             colors.append(color)
+        for uploaded_item in uploaded_data:
+            new_product_image = ProductImage.objects.create(product = new_product, image = uploaded_item)
         new_product.available_sizes.set(sizes)
         new_product.available_colors.set(colors)
         new_product.save()
         return new_product
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Order
+        fields = ['id','owner','panier','product','color','size','quantity','created_at']
+
+class PanierSerializer(serializers.ModelSerializer):
+    orders= serializers.PrimaryKeyRelatedField(many=True , queryset=Order.objects.filter(panier__isnull = True))
+    class Meta :
+        model = Panier
+        fields = ['id','owner','wilaya','commune','detailed_place','postal_code','tel','created_at','orders']
+    def create(self, validated_data):
+        orders = validated_data.pop('orders')
+        panier = super().create(validated_data)
+        for order in orders:
+            order.panier = panier
+            order.save()
+        return panier
+
     
 
     

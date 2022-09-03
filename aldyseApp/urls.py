@@ -34,6 +34,8 @@ router.register('colors', ColorView , basename='product_colors')
 router.register('sizes', SizeView, basename='product_sizes')
 router.register('size_types', SizeTypeView, basename='size_types')
 router.register('products', ProductView , basename='products')
+router.register('orders',OrderView , basename='orders')
+router.register('paniers',PanierView , basename='paniers')
 
 
 urlpatterns = [

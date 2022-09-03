@@ -73,7 +73,7 @@ class SubCategoryView(viewsets.ModelViewSet):
 class CertificateDemandView(viewsets.ModelViewSet):
     queryset = CertificateDemand.objects.all()
     serializer_class = CertificateDemandSerializer
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
     # permission_classes = 
     filter_backends = [DjangoFilterBackend,OrderingFilter,SearchFilter]
     filter_fields = ['boutique','demand','is_accepted']
@@ -126,5 +126,25 @@ class ProductView(viewsets.ModelViewSet):
     filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
     search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','has_size_range','size_type__id','available_sizes__id','published_by']
     ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
+
+class OrderView(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    pagination_class = None
+    # permission_classes = [IsAuthenticated , AdminOrownerPermission]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['owner','panier','product','color','size','quantity','created_at']
+    filterset_fields = ['owner','panier','product','color','size','quantity','created_at']
+    search_fields = ['owner__id','panier__id','product__id','color','size','quantity','created_at']
+    ordering_fields = ['owner','panier','product','color','size','state','wishlist','qte','created_at']
+
+class PanierView(viewsets.ModelViewSet):
+    queryset = Panier.objects.all()
+    serializer_class = PanierSerializer
+    # permission_classes = [IsAuthenticated , AdminOrownerPermission]
+    filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
+    filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
+    search_fields = ['owner__id','detailed_place','wilaya','commune','postal_code','tel']
+    ordering_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
     
 

@@ -105,5 +105,29 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name= 'product_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to = 'product_images/', blank = False , null= False)
+    def __str__(self):
+        return self.image.url
+
+class Panier(models.Model):
+    owner = models.ForeignKey(User , related_name='panier',on_delete= models.CASCADE)
+    detailed_place = models.CharField(max_length=150 , blank= False , null= False)
+    wilaya = models.CharField(max_length=50 , blank= False , null= False)
+    commune = models.CharField(max_length=50 , blank= False , null= False)
+    postal_code = models.PositiveIntegerField()
+    tel = models.CharField(max_length=10 , validators=[num_only], blank= True , null= True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Order(models.Model):
+    owner = models.ForeignKey(User , related_name='orders', on_delete= models.CASCADE , null=True)
+    panier = models.ForeignKey(Panier , related_name='orders',on_delete= models.CASCADE , null= True)
+    product = models.ForeignKey(Product , related_name='product_ordered',on_delete=models.CASCADE)
+    color = models.CharField(max_length=7 , blank=False , null = False)
+    size = models.CharField(max_length=10 , blank= False , null = False)
+    quantity = models.PositiveIntegerField(default = 1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 
