@@ -215,7 +215,10 @@ class PanierSerializer(serializers.ModelSerializer):
             order.panier = panier
             order.save()
         return panier
-
+class NonValidatedBoutiqueSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Boutique
+        fields = ['id','owner','name','is_free','commercial_register']
     
 
     

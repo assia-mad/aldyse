@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets , generics
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticatedOrReadOnly , IsAuthenticated
@@ -146,5 +146,12 @@ class PanierView(viewsets.ModelViewSet):
     filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
     search_fields = ['owner__id','detailed_place','wilaya','commune','postal_code','tel']
     ordering_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
+
+class NonValidatedBoutiqueView(viewsets.ModelViewSet):
+    queryset = Boutique.objects.filter(is_free=False ,owner__is_active = False)
+    serializer_class = NonValidatedBoutiqueSerializer
+
+
+
     
 
