@@ -73,7 +73,7 @@ class CertificateDemand(models.Model):
     created_at = models.DateTimeField(auto_now_add=True , null=True)
 
 class Color(models.Model):
-    code = models.CharField(max_length= 7 ,unique=True, blank= False , null = False)
+    code = models.CharField(max_length= 50 ,unique=True, blank= False , null = False)
     def __str__(self):
         return self.code
 

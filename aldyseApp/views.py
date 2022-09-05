@@ -118,6 +118,17 @@ class SizeTypeView(viewsets.ModelViewSet):
     search_fields = ['name']
     ordering_fields = ['name']
 
+class ProductImageView(viewsets.ModelViewSet):
+    queryset = ProductImage.objects.all()
+    serializer_class = ImageSerializer
+    # permission_classes = [IsAuthenticated , AdminOrownerPermission]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    pagination_class = None
+    filter_fields = ['product']
+    filterset_fields = ['product']
+    search_fields = ['product__id']
+    ordering_fields = ['product']
+
 class ProductView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class =ProductSerializer
@@ -142,6 +153,7 @@ class PanierView(viewsets.ModelViewSet):
     queryset = Panier.objects.all()
     serializer_class = PanierSerializer
     # permission_classes = [IsAuthenticated , AdminOrownerPermission]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
     filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
     search_fields = ['owner__id','detailed_place','wilaya','commune','postal_code','tel']
@@ -150,6 +162,12 @@ class PanierView(viewsets.ModelViewSet):
 class NonValidatedBoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.filter(is_free=False ,owner__is_active = False)
     serializer_class = NonValidatedBoutiqueSerializer
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['owner','name','is_free']
+    search_fields = ['owner__id','name','is_free']
+    ordering_fields = ['owner','name','is_free']
+    
 
 
 

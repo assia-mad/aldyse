@@ -173,7 +173,7 @@ class ProductSerializer(serializers.ModelSerializer):
     available_sizes = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
     update_available_sizes = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True , required = False)
-    images= ImageSerializer(many=True, read_only = True,required = False)
+    images= ImageSerializer(many=True, read_only = True, required = False)
     uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
     class Meta :
         model = Product
