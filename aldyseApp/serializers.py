@@ -197,6 +197,21 @@ class ProductSerializer(serializers.ModelSerializer):
         new_product.available_colors.set(colors)
         new_product.save()
         return new_product
+    def update(self, instance, validated_data):
+        sizes_codes = validated_data.pop('update_available_sizes')
+        sizes = []
+        colors_codes = validated_data.pop('update_available_colors')
+        colors = []
+        for code in sizes_codes:
+            size, created = Size.objects.get_or_create(code = code)
+            sizes.append(size)
+        for code in colors_codes:
+            color, created = Color.objects.get_or_create(code = code)
+            colors.append(color)
+        instance.available_sizes.set(sizes)
+        instance.available_colors.set(colors)
+        instance.save()
+        return instance
    
 
 class OrderSerializer(serializers.ModelSerializer):
