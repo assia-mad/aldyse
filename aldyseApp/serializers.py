@@ -173,20 +173,20 @@ class ProductSerializer(serializers.ModelSerializer):
     available_sizes = serializers.SlugRelatedField(many=True, slug_field='code', read_only=True)
     update_available_sizes = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True , required = False)
-    images= ImageSerializer(many=True, read_only = True, required = False)
-    uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
+    # images= ImageSerializer(many=True, read_only = True, required = False)
+    # uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
     class Meta :
         model = Product
-        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','created_at','images','uploaded_images']
+    fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','created_at']#,'images','uploaded_images']
     def create(self, validated_data):
         new_product = super().create(validated_data)
         sizes_codes = validated_data.pop('update_available_sizes',[])
         sizes = []
         colors_codes = validated_data.pop('update_available_colors',[])
         colors = []
-        uploaded_data = validated_data.pop('uploaded_images',[])
-        for uploaded_item in uploaded_data:
-            new_product_image = ProductImage.objects.create(product = new_product, image = uploaded_item)
+        # uploaded_data = validated_data.pop('uploaded_images',[])
+        # for uploaded_item in uploaded_data:
+        #     new_product_image = ProductImage.objects.create(product = new_product, image = uploaded_item)
         for code in sizes_codes:
             size, created = Size.objects.get_or_create(code = code)
             sizes.append(size)
