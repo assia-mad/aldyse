@@ -135,6 +135,7 @@ class ProductView(viewsets.ModelViewSet):
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
+    filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
     search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','has_size_range','size_type__id','available_sizes__id','published_by']
     ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
 
