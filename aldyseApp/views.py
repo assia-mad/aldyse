@@ -168,6 +168,18 @@ class NonValidatedBoutiqueView(viewsets.ModelViewSet):
     filter_fields = ['owner','name','is_free']
     search_fields = ['owner__id','name','is_free']
     ordering_fields = ['owner','name','is_free']
+
+class ProductCategoryList(generics.ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        name = self.kwargs['name']
+        return Product.objects.filter(sub_category__category__name=name)
+        
     
 
 
