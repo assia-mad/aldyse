@@ -44,6 +44,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         return data_dict
     def save(self, request):
         user = super().save(request)
+        Favorite = FavoriteList.objects.create(owner = user)
         try:
             boutique = self._validated_data['boutique'] or None
             name = boutique.get('name')
@@ -255,4 +256,14 @@ class NonValidatedBoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
         model = Boutique
         fields = ['id','owner','name','is_free','commercial_register']
+
+class FavoritListSerializer(serializers.ModelSerializer):
+    products = serializers.PrimaryKeyRelatedField(
+        queryset= Product.objects.all(),
+        many=True,
+        required=False
+    )
+    class Meta:
+        model = FavoriteList
+        fields = ['id','owner','products']
     

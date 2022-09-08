@@ -127,3 +127,7 @@ class Order(models.Model):
     size = models.CharField(max_length=10 , blank= False , null = False)
     quantity = models.PositiveIntegerField(default = 1)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class FavoriteList(models.Model):
+    owner = models.OneToOneField(User , related_name='Favoritelist', on_delete= models.CASCADE)
+    products = models.ManyToManyField(Product , related_name='favorite_products')

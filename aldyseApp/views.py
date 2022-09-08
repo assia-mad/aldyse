@@ -174,6 +174,16 @@ class ProductCategoryList(generics.ListAPIView):
     def get_queryset(self):
         name = self.kwargs['name']
         return Product.objects.filter(sub_category__category__name=name)
+
+class FavoriteListView(viewsets.ModelViewSet):
+    queryset = FavoriteList.objects.all()
+    serializer_class = FavoritListSerializer
+    # permission_classes = [IsAuthenticatedAndOwner]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['owner','products']
+    filterset_fields = ['owner','products']
+    search_fields = ['owner__id','products']
+    ordering_fields = ['owner','products']
         
     
 
