@@ -97,7 +97,6 @@ class Product(models.Model):
     size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after  french italien
     sub_category = models.ForeignKey(SubCategory , related_name='product', on_delete=models.CASCADE)
     available_colors = models.ManyToManyField(Color , related_name='product_colours')
-    has_size_range = models.BooleanField(default=False)
     available_sizes = models.ManyToManyField(Size , related_name='product_sizes')
     gender = models.CharField(max_length=50,choices=product_gender_choices,default='mixte')
     published_by = models.CharField(max_length=50,choices=product_origins_choices, default ='Aldyse')
@@ -128,6 +127,3 @@ class Order(models.Model):
     size = models.CharField(max_length=10 , blank= False , null = False)
     quantity = models.PositiveIntegerField(default = 1)
     created_at = models.DateTimeField(auto_now_add=True)
-
-
-

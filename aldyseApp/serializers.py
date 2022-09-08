@@ -177,9 +177,20 @@ class ProductSerializer(serializers.ModelSerializer):
     # uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
     class Meta :
         model = Product
-    fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','has_size_range','update_available_sizes','published_by','created_at']#,'images','uploaded_images']
+        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','update_available_sizes','published_by','created_at']
+    
     def create(self, validated_data):
-        new_product = super().create(validated_data)
+        boutique = validated_data.get('boutique')
+        name= validated_data.get('name')
+        description = validated_data.get('description')
+        price = validated_data.get('price')
+        discount_percentage = validated_data.get('discount_percentage')
+        gender = validated_data.get('gender')
+        product_type = validated_data.get('product_type')
+        sub_category = validated_data.get('sub_category')
+        size_type = validated_data.get('size_type')
+        published_by = validated_data.get('published_by')
+        new_product = Product.objects.create(boutique=boutique, name=name, description=description, price=price, discount_percentage=discount_percentage, gender=gender, product_type=product_type, sub_category=sub_category, size_type=size_type, published_by=published_by)
         sizes_codes = validated_data.pop('update_available_sizes',[])
         sizes = []
         colors_codes = validated_data.pop('update_available_colors',[])
@@ -197,6 +208,7 @@ class ProductSerializer(serializers.ModelSerializer):
         new_product.available_colors.set(colors)
         new_product.save()
         return new_product
+
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         sizes_codes = validated_data.pop('update_available_sizes',[])  
@@ -210,12 +222,12 @@ class ProductSerializer(serializers.ModelSerializer):
         for code in colors_codes:
             color, created = Color.objects.get_or_create(code = code)
             colors.append(color)
-        try:
-            uploaded_data = validated_data.pop('uploaded_images',[])
-            for uploaded_item in uploaded_data:
-                new_product_image = ProductImage.objects.create(product = instance, image = uploaded_item)
-        except:
-            pass
+        # try:
+        #     uploaded_data = validated_data.pop('uploaded_images',[])
+        #     for uploaded_item in uploaded_data:
+        #         new_product_image = ProductImage.objects.create(product = instance, image = uploaded_item)
+        # except:
+        #     pass
         instance.available_sizes.set(sizes)
         instance.available_colors.set(colors)
         instance.save()

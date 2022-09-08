@@ -134,10 +134,10 @@ class ProductView(viewsets.ModelViewSet):
     serializer_class =ProductSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
-    filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
-    search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','has_size_range','size_type__id','available_sizes__id','published_by']
-    ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','has_size_range','available_sizes','published_by']
+    filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
+    filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
+    search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','published_by']
+    ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
 
 class OrderView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -171,12 +171,7 @@ class NonValidatedBoutiqueView(viewsets.ModelViewSet):
 
 class ProductCategoryList(generics.ListAPIView):
     serializer_class = ProductSerializer
-
     def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
         name = self.kwargs['name']
         return Product.objects.filter(sub_category__category__name=name)
         
