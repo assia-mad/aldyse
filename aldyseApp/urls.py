@@ -41,6 +41,7 @@ router.register('non_validated_boutiques',NonValidatedBoutiqueView , basename='n
 router.register('favorites', FavoriteListView, basename='favorites')
 
 
+
 urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),

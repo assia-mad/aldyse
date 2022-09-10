@@ -178,6 +178,7 @@ class ProductCategoryList(generics.ListAPIView):
 class FavoriteListView(viewsets.ModelViewSet):
     queryset = FavoriteList.objects.all()
     serializer_class = FavoritListSerializer
+    pagination_class = None
     # permission_classes = [IsAuthenticatedAndOwner]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['owner','products']
