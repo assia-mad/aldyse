@@ -1,6 +1,4 @@
-from turtle import update
-from urllib import response
-from xmlrpc.client import ResponseError
+from django.utils import timezone
 from dj_rest_auth.registration.serializers import RegisterSerializer 
 from dj_rest_auth.serializers import LoginSerializer , UserDetailsSerializer
 from rest_framework import serializers
@@ -9,6 +7,8 @@ from .adapter import *
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import timedelta
+from decimal import Decimal
 
 class BoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
@@ -266,4 +266,21 @@ class FavoritListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteList
         fields = ['id','owner','products']
+
+class HappyHourSerializer(serializers.ModelSerializer):
+    modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    class Meta:
+        model = HappyHour
+        fields = ['id','discount_percentage','is_active','modified_at']
     
+    def update(self, instance, validated_data):
+        percentage = Decimal(validated_data.get('discount_percentage'))
+        if validated_data.get('is_active'):
+            products = Product.objects.all()
+            for product in products :
+                product.discount_percentage += percentage
+                product.save()
+        return super().update(instance, validated_data)
+
+    
+   

@@ -185,6 +185,17 @@ class FavoriteListView(viewsets.ModelViewSet):
     filterset_fields = ['owner','products']
     search_fields = ['owner__id','products']
     ordering_fields = ['owner','products']
+
+class HappyHourView(viewsets.ModelViewSet):
+    queryset = HappyHour.objects.all()
+    serializer_class = HappyHourSerializer
+    pagination_class = None
+    # permission_classes = [IsAuthenticatedAndOwner]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['discount_percentage','is_active','modified_at']
+    filterset_fields = ['discount_percentage','is_active','modified_at']
+    search_fields = ['discount_percentage','is_active','modified_at']
+    ordering_fields = ['discount_percentage','is_active','modified_at']
         
     
 

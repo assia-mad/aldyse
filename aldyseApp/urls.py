@@ -39,6 +39,7 @@ router.register('orders',OrderView , basename='orders')
 router.register('paniers',PanierView , basename='paniers')
 router.register('non_validated_boutiques',NonValidatedBoutiqueView , basename='non_validated_boutique')
 router.register('favorites', FavoriteListView, basename='favorites')
+router.register('happy_hours',HappyHourView, basename='happy_hours')
 
 
 

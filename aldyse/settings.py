@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
+    'apscheduler',
     'aldyseApp',
 ]
 SITE_ID = 1
@@ -89,7 +90,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.PageNumberPagination'),
-    'PAGE_SIZE': 5
+    'PAGE_SIZE': 5,
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
 }
 AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',

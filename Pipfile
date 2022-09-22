@@ -17,6 +17,7 @@ install = "*"
 django-rest-swagger = "*"
 drf-yasg = "*"
 django-rest-auth = "*"
+apscheduler = "*"
 
 [dev-packages]
 

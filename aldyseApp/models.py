@@ -1,8 +1,7 @@
-from email.mime import image
-from statistics import mode
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
+from django.utils import timezone
 
 num_only = RegexValidator(r'^[0-9]*$','only numbers are allowed')
 
@@ -92,7 +91,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100 , blank= False, null= False)
     description = models.TextField(blank=True , null = True)
     price = models.DecimalField(decimal_places =2,max_digits =10 )
-    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 3,  default= 0.00)
+    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 5,  default= 0.00)
     product_type = models.ForeignKey(Type , related_name='product', on_delete=models.CASCADE)
     size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after  french italien
     sub_category = models.ForeignKey(SubCategory , related_name='product', on_delete=models.CASCADE)
@@ -131,3 +130,10 @@ class Order(models.Model):
 class FavoriteList(models.Model):
     owner = models.OneToOneField(User , related_name='Favoritelist', on_delete= models.CASCADE)
     products = models.ManyToManyField(Product , related_name='favorite_products')
+
+class HappyHour(models.Model):
+    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4)
+    is_active = models.BooleanField(default=False)
+    modified_at = models.DateTimeField(default= timezone.now)
+
+
