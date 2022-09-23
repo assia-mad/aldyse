@@ -271,12 +271,12 @@ class HappyHourSerializer(serializers.ModelSerializer):
     modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     class Meta:
         model = HappyHour
-        fields = ['id','discount_percentage','is_active','modified_at']
+        fields = ['id','discount_percentage','boutiques','is_active','modified_at']
     
     def update(self, instance, validated_data):
         percentage = Decimal(validated_data.get('discount_percentage'))
         if validated_data.get('is_active'):
-            products = Product.objects.all()
+            products = Product.objects.filter(boutique__in= instance.boutiques.all())
             for product in products :
                 product.discount_percentage += percentage
                 product.save()

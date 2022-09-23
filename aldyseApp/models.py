@@ -133,6 +133,7 @@ class FavoriteList(models.Model):
 
 class HappyHour(models.Model):
     discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4)
+    boutiques = models.ManyToManyField(Boutique, related_name='Happy_hours')
     is_active = models.BooleanField(default=False)
     modified_at = models.DateTimeField(default= timezone.now)
 
