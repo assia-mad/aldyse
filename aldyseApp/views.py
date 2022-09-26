@@ -7,6 +7,7 @@ from rest_framework.filters import SearchFilter , OrderingFilter
 from rest_framework.parsers import JSONParser , FormParser , MultiPartParser
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import *
+from .permissions import *
 
 class BoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
@@ -196,6 +197,18 @@ class HappyHourView(viewsets.ModelViewSet):
     filterset_fields = ['discount_percentage','is_active','modified_at']
     search_fields = ['discount_percentage','is_active','modified_at']
     ordering_fields = ['discount_percentage','is_active','modified_at']
+
+class ListBoutiquesView(generics.ListAPIView):
+    queryset = Boutique.objects.all()
+    serializer_class = ListBoutiqueSerializer
+    pagination_class = None
+    permission_classes = [AdminAuthenticationPermission]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['name']
+    filterset_fields = ['name']
+    search_fields = ['name']
+    ordering_fields = ['name']
+
         
     
 

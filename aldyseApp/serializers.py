@@ -15,6 +15,11 @@ class BoutiqueSerializer(serializers.ModelSerializer):
         model = Boutique
         fields = ['id','owner','name','gps_address','is_free','is_certified','commercial_register']
 
+class ListBoutiqueSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Boutique
+        fields = ['id','name']
+
 class CustomRegisterSerializer(RegisterSerializer):
     username = None
     first_name = serializers.CharField(required = True , write_only = True)
