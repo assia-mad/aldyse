@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
@@ -34,6 +35,7 @@ class User(AbstractUser):
     role =  models.CharField(max_length=30 , choices=role_choices)
     age = models.PositiveIntegerField(blank=True , null= True)
     gender =  models.CharField(max_length=30 , choices=gender_choices,null = True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
 
 class Boutique(models.Model):
     owner = models.OneToOneField(User , related_name='boutique', on_delete= models.CASCADE , null= True)
@@ -91,7 +93,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100 , blank= False, null= False)
     description = models.TextField(blank=True , null = True)
     price = models.DecimalField(decimal_places =2,max_digits =10 )
-    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 5,  default= 0.00)
+    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4,  default= 00.00)
     product_type = models.ForeignKey(Type , related_name='product', on_delete=models.CASCADE)
     size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after  french italien
     sub_category = models.ForeignKey(SubCategory , related_name='product', on_delete=models.CASCADE)
@@ -99,6 +101,7 @@ class Product(models.Model):
     available_sizes = models.ManyToManyField(Size , related_name='product_sizes')
     gender = models.CharField(max_length=50,choices=product_gender_choices,default='mixte')
     published_by = models.CharField(max_length=50,choices=product_origins_choices, default ='Aldyse')
+    happyhour_discount = models.BooleanField(default = False)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name

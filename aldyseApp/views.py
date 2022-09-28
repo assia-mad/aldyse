@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from rest_framework import viewsets , generics
+from rest_framework import viewsets , generics , status
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticatedOrReadOnly , IsAuthenticated
@@ -8,6 +7,7 @@ from rest_framework.parsers import JSONParser , FormParser , MultiPartParser
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import *
 from .permissions import *
+import random
 
 class BoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
@@ -209,10 +209,65 @@ class ListBoutiquesView(generics.ListAPIView):
     search_fields = ['name']
     ordering_fields = ['name']
 
-        
-    
+class reset_request(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = PasswordrestSerializer
+    def post(self, request, *args, **kwargs):
+        # return super().post(request, *args, **kwargs)
+        data = request.data
+        email = data['email']
+        user = User.objects.get(email=email)
+        if User.objects.filter(email=email).exists():
+            user.otp = random.randint(1000, 9999)
+            user.save()
+            # send email with otp
+            send_mail(
+            'Réinisialiser Votre mot de passe',
+            f'utilisez ce code :  {user.otp} pour réinitialiser votre mot de passe.',
+            'from@example.com',
+            [user.email],
+            fail_silently=False,
+            )
+            message = {
+                'detail': 'email de réinitialisation est envoyé'}
+            return Response(message, status=status.HTTP_200_OK)
+        else:
+            message = {
+                'detail': 'utilisateur avec cet email n existe pas'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-    
-
+class reset_password(generics.UpdateAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    queryset = User.objects.all()
+    def update(self, request, *args, **kwargs):
+        """reset_password with email, OTP and new password"""
+        data = request.data
+        user = User.objects.get(email=data['email'])
+        new_password = data['new_password'] 
+        new_password2 = data['new_password2'] 
+        if user.is_active:
+            # Check if otp is valid
+            if data['otp'] == user.otp:
+                if len(new_password) > 7:
+                    if new_password == new_password2 :
+                        # Change Password
+                        user.set_password(data['new_password'])
+                        user.otp = random.randint(1000, 9999)
+                        user.save()
+                        return Response(' vous avez réinitialisé votre mot de passe  ')
+                    else :
+                        return Response('les deux mot de passe ne sont pas identiques')  
+                else:
+                    message = {
+                        'detail': 'Votre mot de passe est trop court'}
+                    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                message = {
+                    'detail': 'OTP n est pas correcte'}
+                return Response(message, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            message = {
+                'detail': 'il y a une erreur'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+            

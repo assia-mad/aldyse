@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
 from decimal import Decimal
+import random
 
 class BoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
@@ -77,12 +78,12 @@ class CustomUserDetailSerializer(UserDetailsSerializer):
     
     class Meta : 
         model = User
-        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active']
+        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active','otp']
 
 class ManageusersSerializer(serializers.ModelSerializer):
     class Meta :
         model = User
-        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active']
+        fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active','otp']
 
 class UpdateUsersByAdminSerializer(serializers.Serializer):
     role  = serializers.ChoiceField(choices=role_choices , default=role_choices[1])
@@ -183,7 +184,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # uploaded_images = serializers.ListField ( child = serializers.FileField(max_length = 1000000, allow_empty_file =True, use_url = False) , write_only = True )
     class Meta :
         model = Product
-        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','update_available_sizes','published_by','created_at']
+        fields = ['id','boutique','name','description','price','discount_percentage','gender','product_type','sub_category','available_colors','update_available_colors','size_type','available_sizes','update_available_sizes','published_by','happyhour_discount','created_at']
     
     def create(self, validated_data):
         boutique = validated_data.get('boutique')
@@ -277,15 +278,19 @@ class HappyHourSerializer(serializers.ModelSerializer):
     class Meta:
         model = HappyHour
         fields = ['id','discount_percentage','boutiques','is_active','modified_at']
-    
-    def update(self, instance, validated_data):
-        percentage = Decimal(validated_data.get('discount_percentage'))
-        if validated_data.get('is_active'):
-            products = Product.objects.filter(boutique__in= instance.boutiques.all())
-            for product in products :
-                product.discount_percentage += percentage
-                product.save()
-        return super().update(instance, validated_data)
+
+class PasswordrestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email']
+
+class PasswordResetConfirmSerializer(serializers.ModelSerializer):
+    new_password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password', })
+    new_password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password', })
+    class Meta:
+        model = User
+        fields = ['otp','email','new_password','new_password2']
+
 
     
    

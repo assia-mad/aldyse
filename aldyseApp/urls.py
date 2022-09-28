@@ -44,7 +44,7 @@ router.register('happy_hours',HappyHourView, basename='happy_hours')
 
 
 urlpatterns = [
-    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password-reset-confirm/', reset_password.as_view(), name='password_reset_confirm'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),
     path('register/', RegisterView.as_view()),
     path('login/', LoginView.as_view()),
@@ -53,7 +53,7 @@ urlpatterns = [
     path('verify-email/', VerifyEmailView.as_view(), name='rest_verify_email'),
     path('account-confirm-email/', VerifyEmailView.as_view(), name='account_email_verification_sent'),
     re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$',VerifyEmailView.as_view(), name='account_confirm_email'),
-    path('password-reset/', PasswordResetView.as_view()),
+    path('password-reset/', reset_request.as_view()),
     path('password-change/',PasswordChangeView.as_view()),
     path('user/', UserDetailsView.as_view()),
     path('list_boutiques/',ListBoutiquesView.as_view()),
