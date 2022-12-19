@@ -50,7 +50,6 @@ class Wilaya(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=30,unique=True)
-    departs = models.ManyToManyField(Wilaya ,related_name='departs' )
     manager = models.OneToOneField(User , related_name='company', on_delete=models.SET_NULL , null = True)
     def __str__(self):
         return self.name

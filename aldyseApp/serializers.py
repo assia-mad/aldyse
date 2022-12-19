@@ -323,14 +323,14 @@ class WilayaSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id','name','departs']
+        fields = ['id','name','manager']
 
 class DestinationSerializer(serializers.ModelSerializer):
     class Meta :
         model = Destination
         fields = ['id','depart','company','destination','desk_price','home_price','return_costs']
 
-class PublicitySerializer(serializers.Modelserializer):
+class PublicitySerializer(serializers.ModelSerializer):
     class Meta :
         model = Publicity
         fields = ['id','title','description','image']

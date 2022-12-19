@@ -290,10 +290,10 @@ class CompanyView(viewsets.ModelViewSet):
     serializer_class = CompanySerializer
     permission_classes = []
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['name','departs']
-    filterset_fields = ['name','departs']
-    search_fields = ['name','departs__id']
-    ordering_fields = ['name','departs']
+    filter_fields = ['name','manager']
+    filterset_fields = ['name','manager']
+    search_fields = ['name','manager']
+    ordering_fields = ['name','manager']
 
 class DestinationView(viewsets.ModelViewSet):
     queryset = Destination.objects.all()
