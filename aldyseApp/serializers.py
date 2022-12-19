@@ -14,7 +14,7 @@ import random
 class BoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
         model = Boutique
-        fields = ['id','owner','name','gps_address','is_free','is_certified','commercial_register']
+        fields = ['id','owner','name','wilaya','gps_address','is_free','is_certified','commercial_register']
 
 class ListBoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
@@ -250,13 +250,37 @@ class PanierSerializer(serializers.ModelSerializer):
     orders= serializers.PrimaryKeyRelatedField(many=True , queryset=Order.objects.filter(panier__isnull = True))
     class Meta :
         model = Panier
-        fields = ['id','owner','wilaya','commune','detailed_place','postal_code','tel','created_at','orders']
+        fields = ['id','owner','wilaya','commune','detailed_place','company','postal_code','tel','home_delivery','orders','state','total_price','created_at']
     def create(self, validated_data):
+        departs = []
         orders = validated_data.pop('orders')
+        company = validated_data.get('company')
+        wilaya_destination = validated_data.get('wilaya')
+        home_delivery = validated_data.get('home_delivery')
         panier = super().create(validated_data)
         for order in orders:
             order.panier = panier
+            depart = order.product.boutique.wilaya
+            if (depart.id)not in departs : 
+                departs.append(depart.id)
+            panier.total_price += order.product.price
             order.save()
+        print("the departs", departs)
+        print("the company",company)
+        print("the destination", wilaya_destination)
+        destinations = Destination.objects.filter(company = company , destination= wilaya_destination , depart__in = departs).all()
+        print("the destinations",destinations)
+        if home_delivery:
+            for destination in destinations:
+                print("home dest",destination)
+                print(" home her price", destination.home_price)
+                panier.total_price += destination.home_price
+        else :
+            for destination in destinations:
+                print("desk dest",destination)
+                print("desk her price", destination.desk_price)
+                panier.total_price += destination.desk_price
+        panier.save()
         return panier
 class NonValidatedBoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
@@ -290,6 +314,26 @@ class PasswordResetConfirmSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['otp','email','new_password','new_password2']
+
+class WilayaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wilaya
+        fields = ['id','name']
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['id','name','departs']
+
+class DestinationSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Destination
+        fields = ['id','depart','company','destination','desk_price','home_price','return_costs']
+
+class PublicitySerializer(serializers.Modelserializer):
+    class Meta :
+        model = Publicity
+        fields = ['id','title','description','image']
 
 
     

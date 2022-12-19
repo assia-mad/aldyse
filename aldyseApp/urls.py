@@ -40,7 +40,10 @@ router.register('paniers',PanierView , basename='paniers')
 router.register('non_validated_boutiques',NonValidatedBoutiqueView , basename='non_validated_boutique')
 router.register('favorites', FavoriteListView, basename='favorites')
 router.register('happy_hours',HappyHourView, basename='happy_hours')
-
+router.register('companies',CompanyView, basename='companies')
+router.register('wilayas',DepartView, basename='wilayas')
+router.register('destinations',DestinationView, basename='destinations')
+router.register('manager_commands', ManagerCommandsView , basename='manager_commands')
 
 
 urlpatterns = [
@@ -57,6 +60,7 @@ urlpatterns = [
     path('password-change/',PasswordChangeView.as_view()),
     path('user/', UserDetailsView.as_view()),
     path('list_boutiques/',ListBoutiquesView.as_view()),
+    path('myurl/<str:date>/', BoutiquesOrdersStat.as_view()),
     re_path('^pro/(?P<name>.+)/$',ProductCategoryList.as_view()),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

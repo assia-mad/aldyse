@@ -5,9 +5,13 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly , IsAuthenticat
 from rest_framework.filters import SearchFilter , OrderingFilter
 from rest_framework.parsers import JSONParser , FormParser , MultiPartParser
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.views import APIView
 from .pagination import *
 from .permissions import *
 import random
+from datetime import datetime
+from django.db.models import Sum
+
 
 class BoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
@@ -156,10 +160,10 @@ class PanierView(viewsets.ModelViewSet):
     serializer_class = PanierSerializer
     # permission_classes = [IsAuthenticated , AdminOrownerPermission]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
-    filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
-    search_fields = ['owner__id','detailed_place','wilaya','commune','postal_code','tel']
-    ordering_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel']
+    filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
+    filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
+    search_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders__id','company','state','created_at']
+    ordering_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
 
 class NonValidatedBoutiqueView(viewsets.ModelViewSet):
     queryset = Boutique.objects.filter(is_free=False ,owner__is_active = False)
@@ -270,4 +274,70 @@ class reset_password(generics.UpdateAPIView):
             message = {
                 'detail': 'il y a une erreur'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
-            
+
+class DepartView(viewsets.ModelViewSet):
+    queryset = Wilaya.objects.all()
+    serializer_class = WilayaSerializer
+    permission_classes = []
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['name']
+    filterset_fields = ['name']
+    search_fields = ['name']
+    ordering_fields = ['name']
+
+class CompanyView(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = []
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['name','departs']
+    filterset_fields = ['name','departs']
+    search_fields = ['name','departs__id']
+    ordering_fields = ['name','departs']
+
+class DestinationView(viewsets.ModelViewSet):
+    queryset = Destination.objects.all()
+    serializer_class = DestinationSerializer
+    permission_classes = []
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['depart','company','destination','desk_price','home_price','return_costs']
+    filterset_fields = ['depart','company','destination','desk_price','home_price','return_costs']
+    search_fields = ['depart','company','destination','desk_price','home_price','return_costs']
+    ordering_fields = ['depart','company','destination','desk_price','home_price','return_costs']
+
+class ManagerCommandsView(viewsets.ModelViewSet):
+    Serializer_class = PanierSerializer
+    # permission_classes = [DeliveryManagerPermission]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
+    filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
+    search_fields = ['owner__id','detailed_place','wilaya','commune','postal_code','tel','orders__id','company','state','created_at']
+    ordering_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
+    def get_queryset(self):
+        user = self.request.user
+        return Panier.objects.filter(company__manager = user)
+
+class BoutiquesOrdersStat(APIView): 
+    permission_classes = [IsAuthenticated]
+    def get(self , request , format = None,**kwargs):
+        user = request.user
+        boutique = Boutique.objects.get(owner = user)
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        products = dict()
+        products = Order.objects.filter(panier__isnull = False , created_at__gt = date ,product__boutique = boutique).values('product').annotate(total = Sum('quantity')).order_by('-total')
+        data = {
+            'products': products
+        }
+        return Response(data)
+
+class PublicityView(viewsets.ModelViewSet):
+    queryset = Publicity.objects.all()
+    serializer_class = PublicitySerializer
+    permission_classes = []
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['id','title','description','image']
+    filterset_fields = ['id','title','description','image']
+    search_fields = ['id','title','description','image']
+    ordering_fields =['id','title','description','image'] 

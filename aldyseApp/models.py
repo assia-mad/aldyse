@@ -10,6 +10,7 @@ role_choices = [
     ('Admin','Admin'),
     ('Visiteur','Visiteur'),
     ('Vendeur','Vendeur'),
+    ('Livreur','Livreur')
 ]
 gender_choices = [
     ('féminin','féminin'),
@@ -27,6 +28,11 @@ product_gender_choices = [
     ('mixte','mixte'),
 ]
 
+panier_state_choices = [
+    ('livré','livré'),
+    ('non livré','non livré'),
+]
+
 class User(AbstractUser):
     wilaya = models.CharField(max_length=100 , blank=True , null= True)
     commune = models.CharField(max_length=100 , blank=True , null= True)
@@ -37,10 +43,33 @@ class User(AbstractUser):
     gender =  models.CharField(max_length=30 , choices=gender_choices,null = True)
     otp = models.CharField(max_length=6, null=True, blank=True)
 
+class Wilaya(models.Model):
+    name = models.CharField(max_length=30 , blank= False , null = False)
+    def __str__(self):
+        return self.name
+
+class Company(models.Model):
+    name = models.CharField(max_length=30,unique=True)
+    departs = models.ManyToManyField(Wilaya ,related_name='departs' )
+    manager = models.OneToOneField(User , related_name='company', on_delete=models.SET_NULL , null = True)
+    def __str__(self):
+        return self.name
+
+class Destination(models.Model):
+    depart = models.ForeignKey(Wilaya , related_name='wilaya_depart', on_delete= models.CASCADE)
+    company = models.ForeignKey(Company, related_name='destination', on_delete=models.CASCADE)
+    destination = models.ForeignKey(Wilaya ,related_name='destination',on_delete=models.CASCADE , null=True)#make it not null later
+    desk_price = models.PositiveIntegerField()
+    home_price = models.PositiveIntegerField()
+    return_costs = models.PositiveIntegerField()
+    def __str__(self):
+        return self.depart.name+'->'+ self.destination.name
+
 class Boutique(models.Model):
     owner = models.OneToOneField(User , related_name='boutique', on_delete= models.CASCADE , null= True)
     name = models.CharField(max_length=150)
-    gps_address = models.CharField(max_length=100 )
+    wilaya = models.ForeignKey(Wilaya , related_name='boutique', on_delete=models.SET_NULL , null = True)
+    gps_address = models.CharField(max_length=100)
     is_free = models.BooleanField(default=False)
     is_certified = models.BooleanField(default=False)
     commercial_register = models.ImageField(upload_to='register_images/', blank = True , null = True , verbose_name='register_img')
@@ -92,7 +121,7 @@ class Product(models.Model):
     boutique = models.ForeignKey(Boutique , related_name='product', on_delete=models.CASCADE)
     name = models.CharField(max_length=100 , blank= False, null= False)
     description = models.TextField(blank=True , null = True)
-    price = models.DecimalField(decimal_places =2,max_digits =10 )
+    price = models.PositiveIntegerField()
     discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4,  default= 00.00)
     product_type = models.ForeignKey(Type , related_name='product', on_delete=models.CASCADE)
     size_type =  models.ForeignKey(SizeType , related_name='product', on_delete=models.CASCADE,null=True)#remove null after  french italien
@@ -112,13 +141,27 @@ class ProductImage(models.Model):
     def __str__(self):
         return self.image.url
 
+class FavoriteList(models.Model):
+    owner = models.OneToOneField(User , related_name='Favoritelist', on_delete= models.CASCADE)
+    products = models.ManyToManyField(Product , related_name='favorite_products')
+
+class HappyHour(models.Model):
+    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4)
+    boutiques = models.ManyToManyField(Boutique, related_name='Happy_hours')
+    is_active = models.BooleanField(default=False)
+    modified_at = models.DateTimeField(default= timezone.now)
+
 class Panier(models.Model):
     owner = models.ForeignKey(User , related_name='panier',on_delete= models.CASCADE)
     detailed_place = models.CharField(max_length=150 , blank= False , null= False)
-    wilaya = models.CharField(max_length=50 , blank= False , null= False)
+    wilaya = models.ForeignKey(Wilaya, related_name='panier',on_delete=models.SET_NULL , null = True)#make it not null
+    company = models.ForeignKey(Company , related_name='paniers',on_delete = models.SET_NULL , null = True)#make it not null
     commune = models.CharField(max_length=50 , blank= False , null= False)
     postal_code = models.PositiveIntegerField()
     tel = models.CharField(max_length=10 , validators=[num_only], blank= True , null= True)
+    total_price = models.DecimalField(max_digits=8, decimal_places=2 ,default=0.0)
+    state = models.CharField(max_length=20 , choices=panier_state_choices, default = 'non livré')
+    home_delivery = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Order(models.Model):
@@ -130,14 +173,7 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default = 1)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class FavoriteList(models.Model):
-    owner = models.OneToOneField(User , related_name='Favoritelist', on_delete= models.CASCADE)
-    products = models.ManyToManyField(Product , related_name='favorite_products')
-
-class HappyHour(models.Model):
-    discount_percentage = models.DecimalField(decimal_places =2,max_digits = 4)
-    boutiques = models.ManyToManyField(Boutique, related_name='Happy_hours')
-    is_active = models.BooleanField(default=False)
-    modified_at = models.DateTimeField(default= timezone.now)
-
-
+class Publicity(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField()
+    image = models.ImageField(upload_to = 'pub_images/', blank = True, null= True)
