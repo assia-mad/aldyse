@@ -139,10 +139,10 @@ class ProductView(viewsets.ModelViewSet):
     serializer_class =ProductSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
-    filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
-    search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','published_by']
-    ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by']
+    filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by','sub_category__category']
+    filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by','sub_category__category']
+    search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','published_by','sub_category__category__id']
+    ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by''sub_category__category']
 
 class OrderView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -239,7 +239,6 @@ class reset_request(generics.CreateAPIView):
             message = {
                 'detail': 'utilisateur avec cet email n existe pas'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
 
 class reset_password(generics.UpdateAPIView):
     serializer_class = PasswordResetConfirmSerializer

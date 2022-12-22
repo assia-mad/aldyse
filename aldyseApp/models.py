@@ -68,7 +68,7 @@ class Boutique(models.Model):
     owner = models.OneToOneField(User , related_name='boutique', on_delete= models.CASCADE , null= True)
     name = models.CharField(max_length=150)
     wilaya = models.ForeignKey(Wilaya , related_name='boutique', on_delete=models.SET_NULL , null = True)
-    gps_address = models.CharField(max_length=100)
+    gps_address = models.CharField(max_length=30)
     is_free = models.BooleanField(default=False)
     is_certified = models.BooleanField(default=False)
     commercial_register = models.ImageField(upload_to='register_images/', blank = True , null = True , verbose_name='register_img')
@@ -76,20 +76,20 @@ class Boutique(models.Model):
         return self.name
 
 class Type(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
     image = models.ImageField(upload_to='type_images/', blank = True , null = True , verbose_name='type_images')
     def __str__(self):
         return self.name
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
     image = models.ImageField(upload_to='category_images/', blank = True , null = True , verbose_name='category_images')
     def __str__(self):
         return self.name
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category , related_name='SubCategories',on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Subcategory_images/', blank = True , null = True , verbose_name='Subcategory_images')
     def __str__(self):
         return self.name
