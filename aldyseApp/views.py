@@ -155,6 +155,11 @@ class OrderView(viewsets.ModelViewSet):
     search_fields = ['owner__id','panier__id','product__id','color','size','quantity','created_at']
     ordering_fields = ['owner','panier','product','color','size','state','wishlist','qte','created_at']
 
+    def get_queryset(self):
+        if self.request.query_params.get('panier_null', "false") == "true":
+            return Order.objects.filter( panier__isnull = True)
+        return Order.objects.all()
+
 class PanierView(viewsets.ModelViewSet):
     queryset = Panier.objects.all()
     serializer_class = PanierSerializer
