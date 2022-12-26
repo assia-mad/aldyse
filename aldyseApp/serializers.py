@@ -323,7 +323,7 @@ class WilayaSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id','name','manager']
+        fields = ['id','name','image','manager']
 
 class DestinationSerializer(serializers.ModelSerializer):
     class Meta :

@@ -50,6 +50,7 @@ class Wilaya(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=30,unique=True)
+    image = models.ImageField(upload_to='companies_images/', blank = True , null = True , verbose_name='company_img')
     manager = models.OneToOneField(User , related_name='company', on_delete=models.SET_NULL , null = True)
     def __str__(self):
         return self.name

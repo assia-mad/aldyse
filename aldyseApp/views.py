@@ -305,7 +305,7 @@ class DestinationView(viewsets.ModelViewSet):
     ordering_fields = ['depart','company','destination','desk_price','home_price','return_costs']
 
 class ManagerCommandsView(viewsets.ModelViewSet):
-    Serializer_class = PanierSerializer
+    serializer_class = PanierSerializer
     # permission_classes = [DeliveryManagerPermission]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
@@ -339,4 +339,40 @@ class PublicityView(viewsets.ModelViewSet):
     filter_fields = ['id','title','description','image']
     filterset_fields = ['id','title','description','image']
     search_fields = ['id','title','description','image']
-    ordering_fields =['id','title','description','image'] 
+    ordering_fields =['id','title','description','image']
+
+class DeliveryPrice(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        departs = []
+        price = 0
+        orders_ids = kwargs.get("orders", None)
+        orders_values = orders_ids.split(',')
+        if orders_values is not None : 
+            orders = Order.objects.filter(pk__in = orders_values)
+            for order in orders :
+                depart = order.product.boutique.wilaya
+                if (depart.id)not in departs : 
+                    departs.append(depart.id)
+        wilaya_destination = kwargs.get("wilaya_dest", None)
+        company = kwargs.get("company",None)
+        home_delivery = kwargs.get("home_delivery",None)
+        if (company is not None) and (wilaya_destination is not None):
+            destinations = Destination.objects.filter(company = company , destination= wilaya_destination , depart__in = departs).all()
+            if destinations is not None :
+                if home_delivery == "True":
+                    for destination in destinations:
+                        print("home dest",destination)
+                        print(" home her price", destination.home_price)
+                        price += destination.home_price
+                else :
+                    for destination in destinations:
+                        print("desk dest",destination)
+                        print("desk her price", destination.desk_price)
+                        price += destination.desk_price
+            else :
+                return Response({"erreur":"la destination est érroné"})
+        data = {
+            'prix_livraison': price,
+        }
+        return Response(data)
