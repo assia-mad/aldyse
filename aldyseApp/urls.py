@@ -44,6 +44,7 @@ router.register('companies',CompanyView, basename='companies')
 router.register('wilayas',DepartView, basename='wilayas')
 router.register('destinations',DestinationView, basename='destinations')
 router.register('manager_commands', ManagerCommandsView , basename='manager_commands')
+router.register('boutique_orders', BoutiqueOrdersView , basename = 'boutique_orders')
 
 
 urlpatterns = [
@@ -62,6 +63,7 @@ urlpatterns = [
     path('list_boutiques/',ListBoutiquesView.as_view()),
     path('stats_boutique/<str:date>/', BoutiquesOrdersStat.as_view()),
     path('delivery_price/<str:orders>/<int:wilaya_dest>/<int:company>/<str:home_delivery>/',DeliveryPrice.as_view()),
+    path('suggestions/', SuggestedProductsView.as_view() , name = 'suggestions'),
     re_path('^pro/(?P<name>.+)/$',ProductCategoryList.as_view()),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

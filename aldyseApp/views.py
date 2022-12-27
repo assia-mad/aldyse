@@ -11,6 +11,8 @@ from .permissions import *
 import random
 from datetime import datetime
 from django.db.models import Sum
+from itertools import chain
+from django.core.cache import cache
 
 
 class BoutiqueView(viewsets.ModelViewSet):
@@ -138,11 +140,24 @@ class ProductView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class =ProductSerializer
     pagination_class = CustomPagination
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by','sub_category__category']
     filterset_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by','sub_category__category']
     search_fields = ['boutique__id','name','price','discount_percentage','gender','product_type__id','sub_category__id','available_colors__id','size_type__id','available_sizes__id','published_by','sub_category__category__id']
     ordering_fields = ['boutique','name','price','discount_percentage','gender','product_type','sub_category','available_colors','size_type','available_sizes','published_by''sub_category__category']
+    def get_object(self):
+        product = super().get_object()
+        user = self.request.user
+        cached_data = cache.get(user.pk)
+        if cached_data is None:
+            cached_data = [product.sub_category]
+        else :
+            if not (product.sub_category in cached_data):
+                cached_data.append(product.sub_category)
+        cache.set(user.pk , cached_data , 3600*60)
+        print("we cached .......",cache.get(user.pk))
+        return product
 
 class OrderView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -153,7 +168,7 @@ class OrderView(viewsets.ModelViewSet):
     filter_fields = ['owner','panier','product','color','size','quantity','created_at']
     filterset_fields = ['owner','panier','product','color','size','quantity','created_at']
     search_fields = ['owner__id','panier__id','product__id','color','size','quantity','created_at']
-    ordering_fields = ['owner','panier','product','color','size','state','wishlist','qte','created_at']
+    ordering_fields = ['owner','panier','product','color','size','quantity','state','created_at']
 
     def get_queryset(self):
         if self.request.query_params.get('panier_null', "false") == "true":
@@ -381,3 +396,59 @@ class DeliveryPrice(APIView):
             'prix_livraison': price,
         }
         return Response(data)
+
+class SuggestedProductsView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    def get_queryset(self):
+        orders_list = Order.objects.order_by('created_at').filter(owner = self.request.user)[:15]
+        favorites = FavoriteList.objects.get(owner = self.request.user).products.all()
+        visited_sub_categories = cache.get(self.request.user.pk)
+        print("the visited",visited_sub_categories)
+        print("the fav",favorites)
+        print("orders",orders_list)
+        if all(v is None for v in [orders_list, favorites, visited_sub_categories]):
+            print("hiiiiiiiiiiiiiiiiiiiiiii")
+            return Product.objects.all().order_by('?')
+        else :
+            suggestes_sub_categories = [] #suggest based on them
+            purchasted_products = [] #to eleminate them from suggestions
+            suggested_types = [] # suggest products by tags too
+            if visited_sub_categories is not None :
+                suggestes_sub_categories.extend(visited_sub_categories)
+            if orders_list is not None :
+                for order in orders_list:
+                    purchasted_products.append(order.product.pk)
+                    sub_category = order.product.sub_category
+                    type = order.product.product_type
+                    if not ( sub_category in suggestes_sub_categories) :
+                        suggestes_sub_categories.append(sub_category)
+                    if not ( type  in suggested_types):
+                        suggested_types.append(type)
+            if favorites is not None :
+                for product in favorites.all() :
+                    purchasted_products.append(product.pk)
+                    if not (product.sub_category in suggestes_sub_categories):
+                        suggestes_sub_categories.append(product.sub_category)
+                    if not ( product.product_type  in suggested_types):
+                        suggested_types.append(product.product_type )
+            print("the suggested sub categories....",suggestes_sub_categories)
+            print("the suggested types.......",suggested_types)
+            suggested_products1 = Product.objects.filter(sub_category__in = suggestes_sub_categories,product_type__in = suggested_types).exclude(pk__in = purchasted_products).order_by('?')[:20]
+            random_products = Product.objects.all().order_by('?')[:10]
+        return (suggested_products1 | random_products).distinct()
+
+class BoutiqueOrdersView(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['owner','panier','product','color','size','quantity','created_at','panier__state']
+    filterset_fields = ['owner','panier','product','color','size','quantity','created_at','panier__state']
+    search_fields = ['owner__id','panier__id','product__id','color','size','quantity','created_at']
+    ordering_fields = ['owner','panier','product','color','size','quantity','state','created_at']
+    def get_queryset(self):
+        user = self.request.user
+        return Order.objects.filter(product__boutique__owner = user)
+    
