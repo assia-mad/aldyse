@@ -159,6 +159,7 @@ class Panier(models.Model):
     commune = models.CharField(max_length=50 , blank= False , null= False)
     postal_code = models.PositiveIntegerField()
     tel = models.CharField(max_length=10 , validators=[num_only], blank= True , null= True)
+    delivery_price = models.PositiveSmallIntegerField(default=0)#remove that default later
     total_price = models.DecimalField(max_digits=8, decimal_places=2 ,default=0.0)
     state = models.CharField(max_length=20 , choices=panier_state_choices, default = 'non livré')
     home_delivery = models.BooleanField(default=False)
@@ -170,10 +171,16 @@ class Order(models.Model):
     product = models.ForeignKey(Product , related_name='product_ordered',on_delete=models.CASCADE)
     color = models.CharField(max_length=7 , blank=False , null = False)
     size = models.CharField(max_length=10 , blank= False , null = False)
-    quantity = models.PositiveIntegerField(default = 1)
+    quantity = models.PositiveSmallIntegerField(default = 1)
+    price = models.PositiveIntegerField(default=0)#remove that default later
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Publicity(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     image = models.ImageField(upload_to = 'pub_images/', blank = True, null= True)
+
+class Signal(models.Model):
+    user = models.ForeignKey(User , related_name='signal',on_delete=models.CASCADE)
+    description = models.TextField()
+    image = models.ImageField(upload_to = 'signals_images/', blank = True, null= True)

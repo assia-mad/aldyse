@@ -10,7 +10,7 @@ from .pagination import *
 from .permissions import *
 import random
 from datetime import datetime
-from django.db.models import Sum
+from django.db.models import Sum ,Count
 from itertools import chain
 from django.core.cache import cache
 
@@ -165,10 +165,10 @@ class OrderView(viewsets.ModelViewSet):
     pagination_class = None
     # permission_classes = [IsAuthenticated , AdminOrownerPermission]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['owner','panier','product','color','size','quantity','created_at']
-    filterset_fields = ['owner','panier','product','color','size','quantity','created_at']
-    search_fields = ['owner__id','panier__id','product__id','color','size','quantity','created_at']
-    ordering_fields = ['owner','panier','product','color','size','quantity','state','created_at']
+    filter_fields = ['owner','panier','product','color','size','quantity','price','created_at']
+    filterset_fields = ['owner','panier','product','color','size','quantity','price','created_at']
+    search_fields = ['owner__id','panier__id','product__id','color','size','quantity','price','created_at']
+    ordering_fields = ['owner','panier','product','color','size','quantity','price','created_at']
 
     def get_queryset(self):
         if self.request.query_params.get('panier_null', "false") == "true":
@@ -326,7 +326,8 @@ class DestinationView(viewsets.ModelViewSet):
 
 class ManagerCommandsView(viewsets.ModelViewSet):
     serializer_class = PanierSerializer
-    # permission_classes = [DeliveryManagerPermission]
+    permission_classes = [DeliveryManagerPermission]
+    pagination_class = CustomPagination_4
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
     filterset_fields = ['owner','detailed_place','wilaya','commune','postal_code','tel','orders','company','state','created_at']
@@ -355,11 +356,23 @@ class PublicityView(viewsets.ModelViewSet):
     queryset = Publicity.objects.all()
     serializer_class = PublicitySerializer
     permission_classes = []
+    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filter_fields = ['id','title','description','image']
     filterset_fields = ['id','title','description','image']
     search_fields = ['id','title','description','image']
     ordering_fields =['id','title','description','image']
+
+class SignalView(viewsets.ModelViewSet):
+    queryset = Signal.objects.all()
+    serializer_class = SignalSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['id','user','description','image']
+    filterset_fields = ['id','user','description','image']
+    search_fields = ['id','user__id','description','image']
+    ordering_fields =['id','user','description','image']
 
 class DeliveryPrice(APIView):
     permission_classes = [IsAuthenticated]
@@ -456,4 +469,75 @@ class BoutiqueOrdersView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Order.objects.filter(product__boutique__owner = user)
+
+
+class DeliveryStats(generics.ListAPIView):
+    serializer_class = PanierSerializer
+    permission_classes = [DeliveryManagerPermission]
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        total_orders = 0
+        orders_price = 0
+        delivery_price = 0
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        paniers = Panier.objects.filter(company__manager = user , created_at__gte = date).all()
+        for panier in paniers:
+            delivery_price += panier.delivery_price
+            orders_price += panier.total_price
+            total_orders+= panier.orders.count()
+        data = {
+            'total_orders': total_orders,
+            'orders_price': orders_price,
+            'delivery_price': delivery_price,
+        }
+        return Response(data)
     
+class BoutiquesStats(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [AdminAuthenticationPermission]
+    pagination_class = CustomPagination
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        boutiques = Order.objects.filter(created_at__gte = date , panier__isnull = False).values('product__boutique').annotate(total = Sum('quantity')).order_by('-total')
+        data = { 'boutiques' : boutiques}
+        return Response(data)
+
+class SubCategoriesStats(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [AdminAuthenticationPermission]
+    pagination_class = CustomPagination
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        sub_categories = Order.objects.filter(created_at__gte = date , panier__isnull = False).values('product__sub_category').annotate(total = Sum('quantity')).order_by('-total')
+        data = { 'sub_categories' : sub_categories}
+        return Response(data)
+
+class DeliveryCompaniesStats(generics.ListAPIView):
+    serializer_class = PanierSerializer
+    permission_classes = [AdminAuthenticationPermission]
+    pagination_class = CustomPagination
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        companies = Panier.objects.filter(created_at__gte = date).values('company').annotate(total = Count('orders')).order_by('-total')
+        data = { 'companies' : companies}
+        return Response(data)
+
+class WialayasStats(generics.ListAPIView):
+    serializer_class = PanierSerializer
+    permission_classes = [AdminAuthenticationPermission]
+    pagination_class = CustomPagination
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        wilayas = Panier.objects.filter(created_at__gte = date).values('wilaya').annotate(total = Count('orders')).order_by('-total')
+        data = { 'wilayas' : wilayas}
+        return Response(data)
