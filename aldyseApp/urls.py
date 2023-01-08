@@ -45,6 +45,8 @@ router.register('wilayas',DepartView, basename='wilayas')
 router.register('destinations',DestinationView, basename='destinations')
 router.register('manager_commands', ManagerCommandsView , basename='manager_commands')
 router.register('boutique_orders', BoutiqueOrdersView , basename = 'boutique_orders')
+router.register('justifications', JustificationView, basename = 'justifications')
+
 
 
 urlpatterns = [
@@ -64,7 +66,7 @@ urlpatterns = [
     path('stats_boutique/<str:date>/', BoutiquesOrdersStat.as_view()),
     path('delivery_price/<str:orders>/<int:wilaya_dest>/<int:company>/<str:home_delivery>/',DeliveryPrice.as_view()),
     path('suggestions/', SuggestedProductsView.as_view() , name = 'suggestions'),
-    path('stats_delivery/<str:date>/', DeliveryStats.as_view(), name ='stats_delivery'),
+    path('stats_delivery/<str:date>/<str:state>/', DeliveryStats.as_view(), name ='stats_delivery'),
     path('stats_boutiques/<str:date>/', BoutiquesStats.as_view(), name ='stats_boutiques'),
     path('stats_subcategories/<str:date>/', SubCategoriesStats.as_view(), name ='stats_subcategories'),
     path('stats_companies/<str:date>/', DeliveryCompaniesStats.as_view(), name ='stats_companies'),

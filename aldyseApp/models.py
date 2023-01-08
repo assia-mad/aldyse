@@ -31,6 +31,7 @@ product_gender_choices = [
 panier_state_choices = [
     ('livré','livré'),
     ('non livré','non livré'),
+    ('annulé','annulé'),
 ]
 
 class User(AbstractUser):
@@ -184,3 +185,8 @@ class Signal(models.Model):
     user = models.ForeignKey(User , related_name='signal',on_delete=models.CASCADE)
     description = models.TextField()
     image = models.ImageField(upload_to = 'signals_images/', blank = True, null= True)
+
+class Justification(models.Model):
+    user = models.ForeignKey(User,related_name='justification',on_delete=models.CASCADE)
+    panier = models.ForeignKey(Panier,related_name='justification',on_delete=models.CASCADE)
+    description = models.TextField()

@@ -358,10 +358,10 @@ class PublicityView(viewsets.ModelViewSet):
     permission_classes = []
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['id','title','description','image']
-    filterset_fields = ['id','title','description','image']
-    search_fields = ['id','title','description','image']
-    ordering_fields =['id','title','description','image']
+    filter_fields = ['title','description','image']
+    filterset_fields = ['title','description','image']
+    search_fields = ['title','description','image']
+    ordering_fields =['title','description','image']
 
 class SignalView(viewsets.ModelViewSet):
     queryset = Signal.objects.all()
@@ -369,10 +369,10 @@ class SignalView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['id','user','description','image']
-    filterset_fields = ['id','user','description','image']
-    search_fields = ['id','user__id','description','image']
-    ordering_fields =['id','user','description','image']
+    filter_fields = ['user','description','image']
+    filterset_fields = ['user','description','image']
+    search_fields = ['user__id','description','image']
+    ordering_fields =['user','description','image']
 
 class DeliveryPrice(APIView):
     permission_classes = [IsAuthenticated]
@@ -454,7 +454,7 @@ class SuggestedProductsView(generics.ListAPIView):
             print("the suggested sub categories....",suggestes_sub_categories)
             print("the suggested types.......",suggested_types)
             suggested_products1 = Product.objects.filter(sub_category__in = suggestes_sub_categories,product_type__in = suggested_types).exclude(pk__in = purchasted_products).order_by('?')[:20]
-            random_products = Product.objects.all().order_by('?')[:10]
+            random_products = Product.objects.exclude(pk__in=suggested_products1).order_by('?')[:10]
         return (suggested_products1 | random_products).distinct()
 
 class BoutiqueOrdersView(viewsets.ModelViewSet):
@@ -482,7 +482,9 @@ class DeliveryStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        paniers = Panier.objects.filter(company__manager = user , created_at__gte = date).all()
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        paniers = Panier.objects.filter(company__manager = user , created_at__gte = date,state=k_state).all()
         for panier in paniers:
             delivery_price += panier.delivery_price
             orders_price += panier.total_price
@@ -541,3 +543,14 @@ class WialayasStats(generics.ListAPIView):
         wilayas = Panier.objects.filter(created_at__gte = date).values('wilaya').annotate(total = Count('orders')).order_by('-total')
         data = { 'wilayas' : wilayas}
         return Response(data)
+
+class JustificationView(viewsets.ModelViewSet):
+    queryset = Justification.objects.all()
+    serializer_class = JustificationSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['user','panier','description']
+    filterset_fields = ['user','panier','description']
+    search_fields = ['user__id','panier__id','description']
+    ordering_fields =['user','panier','description']

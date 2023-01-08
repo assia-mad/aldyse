@@ -252,36 +252,34 @@ class PanierSerializer(serializers.ModelSerializer):
         model = Panier
         fields = ['id','owner','wilaya','commune','detailed_place','company','postal_code','tel','home_delivery','orders','state','total_price','delivery_price','created_at']
     def create(self, validated_data):
-        # departs = []
         orders = validated_data.pop('orders')
-        # company = validated_data.get('company')
-        # wilaya_destination = validated_data.get('wilaya')
-        # home_delivery = validated_data.get('home_delivery')
         panier = super().create(validated_data)
         for order in orders:
             order.panier = panier
-            # depart = order.product.boutique.wilaya
-            # if (depart.id)not in departs : 
-            #     departs.append(depart.id)
-            # panier.total_price += order.product.price
             order.save()
-        # print("the departs", departs)
-        # print("the company",company)
-        # print("the destination", wilaya_destination)
-        # destinations = Destination.objects.filter(company = company , destination= wilaya_destination , depart__in = departs).all()
-        # print("the destinations",destinations)
-        # if home_delivery:
-        #     for destination in destinations:
-        #         print("home dest",destination)
-        #         print(" home her price", destination.home_price)
-        #         panier.total_price += destination.home_price
-        # else :
-        #     for destination in destinations:
-        #         print("desk dest",destination)
-        #         print("desk her price", destination.desk_price)
-        #         panier.total_price += destination.desk_price
-        # panier.save()
         return panier
+
+    def update(self, instance, validated_data):
+        new_panier = super().update(instance, validated_data)
+        if new_panier.state == "annulé":
+            owner = new_panier.owner
+            num_panier_annule = Panier.objects.filter(owner = owner , state='annulé').count()
+            name = owner.first_name+' '+owner.last_name
+            if num_panier_annule < 3 :
+                subject = 'Avertissement'
+                message = f'Bonjour {name} hadi machi affsa tae rjal ya kho'
+                from_email = settings.EMAIL_HOST_USER 
+                recipient_list = [owner.email]
+                send_mail(subject, message,from_email,recipient_list , fail_silently=False)
+            else :
+                owner.is_active = False
+                subject = 'Compte Aldyse'
+                message = f'Bonjour {name} votre compte a été désactivé'
+                from_email = settings.EMAIL_HOST_USER 
+                recipient_list = [owner.email]
+                send_mail(subject, message,from_email,recipient_list , fail_silently=False) 
+        return new_panier
+    
 class NonValidatedBoutiqueSerializer(serializers.ModelSerializer):
     class Meta :
         model = Boutique
@@ -340,4 +338,7 @@ class SignalSerializer(serializers.ModelSerializer):
         model = Signal
         fields = ['id','user','description','image']
 
-
+class JustificationSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Signal
+        fields = ['id','user','panier','description']
