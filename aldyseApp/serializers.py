@@ -85,10 +85,10 @@ class ManageusersSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name','last_name','email','wilaya','commune','tel','image','role','age','gender','is_staff', 'is_active','otp']
 
-class UpdateUsersByAdminSerializer(serializers.Serializer):
-    role  = serializers.ChoiceField(choices=role_choices , default=role_choices[1])
-    is_active = serializers.BooleanField( default=True)
-        
+class UpdateUsersByAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['role','is_active']
     def update(self, instance, validated_data):
         new_role = validated_data.get('role') 
         if instance.role != new_role:
@@ -107,7 +107,7 @@ class UpdateUsersByAdminSerializer(serializers.Serializer):
             if validated_data.get('is_active') == True:
                 account = 'est activé'
             else :
-                account = 'est désactivé'
+                account = 'a été désactivé'
             subject = 'Compte Aldyse'
             message = f'Salut {instance.first_name} {instance.last_name} votre compte {account}'
             from_email = settings.EMAIL_HOST_USER 
