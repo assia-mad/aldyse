@@ -46,6 +46,9 @@ router.register('destinations',DestinationView, basename='destinations')
 router.register('manager_commands', ManagerCommandsView , basename='manager_commands')
 router.register('boutique_orders', BoutiqueOrdersView , basename = 'boutique_orders')
 router.register('justifications', JustificationView, basename = 'justifications')
+router.register('signals',SignalView , basename='signals')
+router.register('notifications',NotificationView, basename='notifications')
+router.register('publicities',PublicityView, basename='publicities')
 
 
 

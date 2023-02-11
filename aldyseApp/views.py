@@ -159,6 +159,42 @@ class ProductView(viewsets.ModelViewSet):
         print("we cached .......",cache.get(user.pk))
         return product
 
+    def destroy(self, request, *args, **kwargs):
+        product = self.get_object()
+        print(product)
+        orders = Order.objects.filter(product=product)
+        if orders is not None :
+            for order in orders:
+                title = "produit supprimé"
+                description = "Le produit"+product.name+"a été supprimé"
+                Notification.objects.create(user=order.owner,title=title,description=description)
+                panier_id = order.panier.id
+                if panier_id is not None :
+                    panier = Panier.objects.filter(pk=panier_id).first()
+                    print("before deleting",panier.total_price)
+                    #do price changes for the panier
+                    panier.total_price -= order.price
+                    print("after deleting",panier.total_price)
+                    depart = order.product.boutique.wilaya
+                    wilaya_destination = panier.wilaya
+                    home_delivery = panier.home_delivery
+                    company = panier.company
+                    destination = Destination.objects.filter(company = company , destination= wilaya_destination , depart = depart).first()
+                    print("the destination",destination)
+                    print("delivery price",panier.delivery_price)
+                    if home_delivery:
+                        price = destination.home_price
+                    else:
+                        price = destination.desk_price
+                    panier.delivery_price -= price
+                    print("delivery price",panier.delivery_price)
+                    panier.save()
+                    if panier.total_price == 0.0 :
+                        panier.delete()
+                order.delete()
+        self.perform_destroy(product)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class OrderView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -358,10 +394,10 @@ class PublicityView(viewsets.ModelViewSet):
     permission_classes = []
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['title','description','image']
-    filterset_fields = ['title','description','image']
-    search_fields = ['title','description','image']
-    ordering_fields =['title','description','image']
+    filter_fields = ['title','description','image','created_at']
+    filterset_fields = ['title','description','image','created_at']
+    search_fields = ['title','description','image','created_at']
+    ordering_fields =['title','description','image','created_at']
 
 class SignalView(viewsets.ModelViewSet):
     queryset = Signal.objects.all()
@@ -369,10 +405,10 @@ class SignalView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['user','description','image']
-    filterset_fields = ['user','description','image']
-    search_fields = ['user__id','description','image']
-    ordering_fields =['user','description','image']
+    filter_fields = ['user','description','image','created_at']
+    filterset_fields = ['user','description','image','created_at']
+    search_fields = ['user__id','description','image','created_at']
+    ordering_fields =['user','description','image','created_at']
 
 class DeliveryPrice(APIView):
     permission_classes = [IsAuthenticated]
@@ -550,7 +586,17 @@ class JustificationView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['user','panier','description']
-    filterset_fields = ['user','panier','description']
-    search_fields = ['user__id','panier__id','description']
-    ordering_fields =['user','panier','description']
+    filter_fields = ['user','panier','description','created_at']
+    filterset_fields = ['user','panier','description','created_at']
+    search_fields = ['user__id','panier__id','description','created_at']
+    ordering_fields =['user','panier','description','created_at']
+
+class NotificationView(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields = ['user','title','description','created_at']
+    filterset_fields = ['user','title','description','created_at']
+    search_fields = ['user__id','title','description','created_at']
+    ordering_fields =['user','title','description','created_at']

@@ -239,6 +239,38 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.available_colors.set(colors)
         instance.save()
         return instance
+    
+
+    # def delete(self, request, *args, **kwargs):
+    #     product = Product.objects.filter(pk=id).first()
+    #     print(product)
+    #     orders = Order.objects.filter(product=product)
+    #     for order in orders:
+    #         panier_id = order.panier
+    #         panier = Panier.objects.filter(pk=panier_id).first()
+    #         print("before deleting"+panier.total_price)
+    #         #do price changes for the panier
+    #         panier.total_price -= order.price
+    #         print("after deleting"+panier.total_price)
+    #         depart = order.product.boutique.wilaya
+    #         wilaya_destination = panier.wilaya
+    #         home_delivery = panier.home_delivery
+    #         company = panier.company
+    #         destination = Destination.objects.filter(company = company , destination= wilaya_destination , depart = depart).first()
+    #         print("the destination"+destination)
+    #         print("delivery price"+panier.delivery_price)
+    #         if home_delivery:
+    #             price = destination.home_price
+    #         else:
+    #             price = destination.desk_price
+
+    #         panier.delivery_price -= price
+    #         print("delivery price"+panier.delivery_price)
+    #         panier.save()
+    #         if panier.total_price == 0.0 :
+    #             panier.delete()
+    #         order.delete()
+    #     return product.delete()
    
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -331,14 +363,19 @@ class DestinationSerializer(serializers.ModelSerializer):
 class PublicitySerializer(serializers.ModelSerializer):
     class Meta :
         model = Publicity
-        fields = ['id','title','description','image']
+        fields = ['id','title','description','image','created_at']
 
 class SignalSerializer(serializers.ModelSerializer):
     class Meta :
         model = Signal
-        fields = ['id','user','description','image']
+        fields = ['id','user','description','image','created_at']
 
 class JustificationSerializer(serializers.ModelSerializer):
     class Meta :
-        model = Signal
-        fields = ['id','user','panier','description']
+        model = Justification
+        fields = ['id','user','panier','description','created_at']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Notification
+        fields = ['id','user','title','description','created_at']
