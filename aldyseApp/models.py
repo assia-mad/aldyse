@@ -197,5 +197,5 @@ class Justification(models.Model):
 class Notification(models.Model):
     user = models.ForeignKey(User, related_name ='notifications', on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
-    desciption = models.TextField()
+    description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True,null=True)

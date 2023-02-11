@@ -394,10 +394,10 @@ class PublicityView(viewsets.ModelViewSet):
     permission_classes = []
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['title','description','image','created_at']
-    filterset_fields = ['title','description','image','created_at']
-    search_fields = ['title','description','image','created_at']
-    ordering_fields =['title','description','image','created_at']
+    filter_fields = ['title','description','created_at']
+    filterset_fields = ['title','description','created_at']
+    search_fields = ['title','description','created_at']
+    ordering_fields =['title','description','created_at']
 
 class SignalView(viewsets.ModelViewSet):
     queryset = Signal.objects.all()
@@ -405,10 +405,10 @@ class SignalView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields = ['user','description','image','created_at']
-    filterset_fields = ['user','description','image','created_at']
-    search_fields = ['user__id','description','image','created_at']
-    ordering_fields =['user','description','image','created_at']
+    filter_fields = ['user','description','created_at']
+    filterset_fields = ['user','description','created_at']
+    search_fields = ['user__id','description','created_at']
+    ordering_fields =['user','description','created_at']
 
 class DeliveryPrice(APIView):
     permission_classes = [IsAuthenticated]
