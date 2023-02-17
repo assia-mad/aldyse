@@ -49,6 +49,7 @@ router.register('justifications', JustificationView, basename = 'justifications'
 router.register('signals',SignalView , basename='signals')
 router.register('notifications',NotificationView, basename='notifications')
 router.register('publicities',PublicityView, basename='publicities')
+router.register('list_boutiques',ListBoutiquesView , basename='list_boutiques')
 
 
 
@@ -65,7 +66,6 @@ urlpatterns = [
     path('password-reset/', reset_request.as_view()),
     path('password-change/',PasswordChangeView.as_view()),
     path('user/', UserDetailsView.as_view()),
-    path('list_boutiques/',ListBoutiquesView.as_view()),
     path('stats_boutique/<str:date>/', BoutiquesOrdersStat.as_view()),
     path('delivery_price/<str:orders>/<int:wilaya_dest>/<int:company>/<str:home_delivery>/',DeliveryPrice.as_view()),
     path('suggestions/', SuggestedProductsView.as_view() , name = 'suggestions'),

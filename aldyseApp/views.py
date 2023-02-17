@@ -258,7 +258,7 @@ class HappyHourView(viewsets.ModelViewSet):
     search_fields = ['discount_percentage','is_active','modified_at']
     ordering_fields = ['discount_percentage','is_active','modified_at']
 
-class ListBoutiquesView(generics.ListAPIView):
+class ListBoutiquesView(viewsets.ModelViewSet):
     queryset = Boutique.objects.all()
     serializer_class = ListBoutiqueSerializer
     pagination_class = None
