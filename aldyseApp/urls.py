@@ -72,7 +72,7 @@ urlpatterns = [
     path('stats_delivery/<str:date>/<str:state>/', DeliveryStats.as_view(), name ='stats_delivery'),
     path('stats_boutiques/<str:date>/<str:state>/', BoutiquesStats.as_view(), name ='stats_boutiques'),
     path('stats_subcategories/<str:date>/<str:state>/', SubCategoriesStats.as_view(), name ='stats_subcategories'),
-    path('stats_companies/<str:date>/', DeliveryCompaniesStats.as_view(), name ='stats_companies'),
+    path('stats_companies/<str:date>/<str:state>/', DeliveryCompaniesStats.as_view(), name ='stats_companies'),
     path('stats_wilayas/<str:date>/<str:state>/', WialayasStats.as_view(), name ='stats_wilayas'),
     re_path('^pro/(?P<name>.+)/$',ProductCategoryList.as_view()),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

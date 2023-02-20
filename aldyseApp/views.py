@@ -568,7 +568,9 @@ class DeliveryCompaniesStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        companies = Panier.objects.filter(created_at__gte = date , state = 'livré').values('company').annotate(total = Count('orders')).order_by('-total')
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        companies = Panier.objects.filter(created_at__gte = date , state = k_state).values('company').annotate(total = Count('orders')).order_by('-total')
         data = {'companies' : companies}
         return Response(data)
 
