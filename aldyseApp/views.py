@@ -540,8 +540,10 @@ class BoutiquesStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        boutiques = Order.objects.filter(created_at__gte = date , panier__isnull = False).values('product__boutique').annotate(total = Sum('quantity')).order_by('-total')
-        data = { 'boutiques' : boutiques}
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        boutiques = Order.objects.filter(created_at__gte = date , panier__isnull = False,panier__state=k_state).values('product__boutique').annotate(total = Sum('quantity')).order_by('-total')
+        data = {'boutiques' : boutiques}
         return Response(data)
 
 class SubCategoriesStats(generics.ListAPIView):
@@ -552,8 +554,10 @@ class SubCategoriesStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        sub_categories = Order.objects.filter(created_at__gte = date , panier__isnull = False).values('product__sub_category').annotate(total = Sum('quantity')).order_by('-total')
-        data = { 'sub_categories' : sub_categories}
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        sub_categories = Order.objects.filter(created_at__gte = date , panier__isnull = False,panier__state=k_state).values('product__sub_category').annotate(total = Sum('quantity')).order_by('-total')
+        data = {'sub_categories' : sub_categories}
         return Response(data)
 
 class DeliveryCompaniesStats(generics.ListAPIView):
@@ -564,8 +568,8 @@ class DeliveryCompaniesStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        companies = Panier.objects.filter(created_at__gte = date).values('company').annotate(total = Count('orders')).order_by('-total')
-        data = { 'companies' : companies}
+        companies = Panier.objects.filter(created_at__gte = date , state = 'livré').values('company').annotate(total = Count('orders')).order_by('-total')
+        data = {'companies' : companies}
         return Response(data)
 
 class WialayasStats(generics.ListAPIView):
@@ -576,8 +580,10 @@ class WialayasStats(generics.ListAPIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
-        wilayas = Panier.objects.filter(created_at__gte = date).values('wilaya').annotate(total = Count('orders')).order_by('-total')
-        data = { 'wilayas' : wilayas}
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        wilayas = Panier.objects.filter(created_at__gte = date, state=k_state).values('wilaya').annotate(total = Count('orders')).order_by('-total')
+        data = {'wilayas' : wilayas}
         return Response(data)
 
 class JustificationView(viewsets.ModelViewSet):
