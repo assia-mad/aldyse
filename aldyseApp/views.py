@@ -489,9 +489,11 @@ class SuggestedProductsView(generics.ListAPIView):
                         suggested_types.append(product.product_type )
             print("the suggested sub categories....",suggestes_sub_categories)
             print("the suggested types.......",suggested_types)
-            suggested_products1 = Product.objects.filter(sub_category__in = suggestes_sub_categories,product_type__in = suggested_types).exclude(pk__in = purchasted_products).order_by('?')[:20]
-            random_products = Product.objects.exclude(pk__in=suggested_products1).order_by('?')[:10]
-        return (suggested_products1 | random_products).distinct()
+            suggested_products1 = Product.objects.filter(sub_category__in = suggestes_sub_categories,product_type__in = suggested_types).exclude(pk__in = purchasted_products).order_by('?')[:30]
+            random_products = Product.objects.exclude(pk__in=suggested_products1).order_by('?')[:25]
+            result_queryset = random_products |suggested_products1  
+        return result_queryset
+       
 
 class BoutiqueOrdersView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -510,6 +512,7 @@ class BoutiqueOrdersView(viewsets.ModelViewSet):
 class DeliveryStats(generics.ListAPIView):
     serializer_class = PanierSerializer
     permission_classes = [DeliveryManagerPermission]
+    pagination_class = None
     def get(self, request, *args, **kwargs):
         user = request.user
         total_orders = 0
@@ -535,7 +538,7 @@ class DeliveryStats(generics.ListAPIView):
 class BoutiquesStats(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AdminAuthenticationPermission]
-    pagination_class = CustomPagination
+    pagination_class = None
     def get(self, request, *args, **kwargs):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
@@ -549,7 +552,7 @@ class BoutiquesStats(generics.ListAPIView):
 class SubCategoriesStats(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AdminAuthenticationPermission]
-    pagination_class = CustomPagination
+    pagination_class = None
     def get(self, request, *args, **kwargs):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
@@ -563,7 +566,7 @@ class SubCategoriesStats(generics.ListAPIView):
 class DeliveryCompaniesStats(generics.ListAPIView):
     serializer_class = PanierSerializer
     permission_classes = [AdminAuthenticationPermission]
-    pagination_class = CustomPagination
+    pagination_class = None
     def get(self, request, *args, **kwargs):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
@@ -574,10 +577,25 @@ class DeliveryCompaniesStats(generics.ListAPIView):
         data = {'companies' : companies}
         return Response(data)
 
+class TypeStats(generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    pagination_class = None
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("date", None) is not None:
+            sdate = kwargs["date"]
+            date = datetime.strptime(sdate,'%d-%m-%y')
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
+        types = Order.objects.filter(created_at__gte = date , panier__isnull = False,panier__state=k_state).values("product__product_type").annotate(total = Sum('quantity')).order_by('-total')
+        data = {'types':types}
+        return Response(data)
+
+
 class WialayasStats(generics.ListAPIView):
     serializer_class = PanierSerializer
     permission_classes = [AdminAuthenticationPermission]
-    pagination_class = CustomPagination
+    pagination_class = None
     def get(self, request, *args, **kwargs):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]

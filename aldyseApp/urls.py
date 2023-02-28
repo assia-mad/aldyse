@@ -74,6 +74,7 @@ urlpatterns = [
     path('stats_subcategories/<str:date>/<str:state>/', SubCategoriesStats.as_view(), name ='stats_subcategories'),
     path('stats_companies/<str:date>/<str:state>/', DeliveryCompaniesStats.as_view(), name ='stats_companies'),
     path('stats_wilayas/<str:date>/<str:state>/', WialayasStats.as_view(), name ='stats_wilayas'),
+    path('stats_types/<str:date>/<str:state>/', TypeStats.as_view(), name ='stats_types'),
     re_path('^pro/(?P<name>.+)/$',ProductCategoryList.as_view()),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
