@@ -66,7 +66,7 @@ urlpatterns = [
     path('password-reset/', reset_request.as_view()),
     path('password-change/',PasswordChangeView.as_view()),
     path('user/', UserDetailsView.as_view()),
-    path('stats_boutique/<str:date>/', BoutiquesOrdersStat.as_view()),
+    path('stats_boutique/<str:date>/<str:state>/', BoutiquesOrdersStat.as_view()),
     path('delivery_price/<str:orders>/<int:wilaya_dest>/<int:company>/<str:home_delivery>/',DeliveryPrice.as_view()),
     path('suggestions/', SuggestedProductsView.as_view() , name = 'suggestions'),
     path('stats_delivery/<str:date>/<str:state>/', DeliveryStats.as_view(), name ='stats_delivery'),

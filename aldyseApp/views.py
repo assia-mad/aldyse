@@ -381,8 +381,10 @@ class BoutiquesOrdersStat(APIView):
         if kwargs.get("date", None) is not None:
             sdate = kwargs["date"]
             date = datetime.strptime(sdate,'%d-%m-%y')
+        if kwargs.get("state", None) is not None:
+            k_state= kwargs["state"]
         products = dict()
-        products = Order.objects.filter(panier__isnull = False , created_at__gt = date ,product__boutique = boutique).values('product').annotate(total = Sum('quantity')).order_by('-total')
+        products = Order.objects.filter(panier__isnull = False , created_at__gt = date ,product__boutique = boutique,panier__state=k_state).values('product').annotate(total = Sum('quantity')).order_by('-total')
         data = {
             'products': products
         }
